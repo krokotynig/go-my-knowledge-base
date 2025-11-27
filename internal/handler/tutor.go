@@ -5,7 +5,8 @@ import (
 	"knowledge-base/internal/service"
 	"net/http"
 	"strconv" // преобразование строк в число
-	"strings" // работа со строками
+
+	"github.com/gorilla/mux"
 	// gorilla/mux? Популярная для преоброзования url в число?
 )
 
@@ -17,12 +18,18 @@ func NewTutorhandler(tutorService *service.Tutor) *TutorHandler {
 	return &TutorHandler{tutorService: tutorService}
 }
 
+// @Summary Получить всех тьюторов
+// @Description Возвращает список всех тьюторов
+// @Tags tutors
+// @Produce json
+// @Success 200 {array} models.Tutor
+// @Router /tutors [get]
 func (tutorHandler *TutorHandler) GetAllTutors(w http.ResponseWriter, r *http.Request) {
-	// Проверяем метод запроса
-	if r.Method != http.MethodGet {
-		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-		return
-	}
+	// Проверяем метод запроса, с gorilla/mux не нухно
+	// if r.Method != http.MethodGet {
+	// 	http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
+	// 	return
+	// }
 
 	// Вызываем сервисный слой
 	tutors, err := tutorHandler.tutorService.GetAll()
@@ -42,22 +49,20 @@ func (tutorHandler *TutorHandler) GetAllTutors(w http.ResponseWriter, r *http.Re
 	}
 }
 
+// @Summary Получить тьютора по ID
+// @Description Возвращает тьютора по указанному ID
+// @Tags tutors
+// @Produce json
+// @Param id path int true "ID тьютора"
+// @Success 200 {object} models.Tutor
+// @Failure 400 {string} string "Неверный ID"
+// @Failure 404 {string} string "Тьютор не найден"
+// @Router /tutors/{id} [get]
 func (tutorHandler *TutorHandler) GetTutorByID(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method != http.MethodGet {
-		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-		return
-	}
+	vars := mux.Vars(r) // "/tutors/5"
+	idStr := vars["id"] // в шаблоне парамертр называется id
 
-	path := r.URL.Path // "/tutors/5"
-	parts := strings.Split(path, "/")
-
-	if len(parts) != 3 || parts[1] != "tutors" { // прерывает выполнение, если неверный url
-		http.Error(w, "Неверный URL", http.StatusBadRequest)
-		return
-	}
-
-	idStr := parts[2]              // "1"
 	id, err := strconv.Atoi(idStr) //преобразование строк в число
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
@@ -79,22 +84,24 @@ func (tutorHandler *TutorHandler) GetTutorByID(w http.ResponseWriter, r *http.Re
 	}
 }
 
+// @Summary Delete tutor by ID
+// @Description Delete tutor by ID
+// @Tags tutors
+// @Param id path int true "Tutor ID"
+// @Success 204
+// @Failure 400 {string} string "Invalid ID"
+// @Failure 404 {string} string "Tutor not found"
+// @Router /tutors/{id} [delete]
 func (tutorHandler *TutorHandler) DeleteTutorByID(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-		return
-	}
+	// if r.Method != http.MethodDelete {
+	// 	http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
+	// 	return
+	// }
 
-	path := r.URL.Path // "/tutors/5"
-	parts := strings.Split(path, "/")
+	vars := mux.Vars(r) // "/tutors/5"
+	idStr := vars["id"] // в шаблоне парамертр называется id
 
-	if len(parts) != 4 || parts[1] != "tutors" || parts[2] != "delete" { // прерывает выполнение, если неверный url
-		http.Error(w, "Неверный URL", http.StatusBadRequest)
-		return
-	}
-
-	idStr := parts[3]              // "1"
 	id, err := strconv.Atoi(idStr) //преобразование строк в число
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)

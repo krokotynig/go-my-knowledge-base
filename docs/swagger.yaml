@@ -1,0 +1,83 @@
+basePath: /
+definitions:
+  models.Tutor:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+    type: object
+host: localhost:2709
+info:
+  contact: {}
+  description: API для базы знаний с вопросами и ответами
+  title: Knowledge Base API
+  version: "1.0"
+paths:
+  /tutors:
+    get:
+      description: Возвращает список всех тьюторов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tutor'
+            type: array
+      summary: Получить всех тьюторов
+      tags:
+      - tutors
+  /tutors/{id}:
+    delete:
+      description: Delete tutor by ID
+      parameters:
+      - description: Tutor ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Tutor not found
+          schema:
+            type: string
+      summary: Delete tutor by ID
+      tags:
+      - tutors
+    get:
+      description: Возвращает тьютора по указанному ID
+      parameters:
+      - description: ID тьютора
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tutor'
+        "400":
+          description: Неверный ID
+          schema:
+            type: string
+        "404":
+          description: Тьютор не найден
+          schema:
+            type: string
+      summary: Получить тьютора по ID
+      tags:
+      - tutors
+swagger: "2.0"

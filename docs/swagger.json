@@ -1,0 +1,126 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API для базы знаний с вопросами и ответами",
+        "title": "Knowledge Base API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:2709",
+    "basePath": "/",
+    "paths": {
+        "/tutors": {
+            "get": {
+                "description": "Возвращает список всех тьюторов",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tutors"
+                ],
+                "summary": "Получить всех тьюторов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Tutor"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tutors/{id}": {
+            "get": {
+                "description": "Возвращает тьютора по указанному ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tutors"
+                ],
+                "summary": "Получить тьютора по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID тьютора",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tutor"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Тьютор не найден",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete tutor by ID",
+                "tags": [
+                    "tutors"
+                ],
+                "summary": "Delete tutor by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tutor ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Tutor not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Tutor": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
