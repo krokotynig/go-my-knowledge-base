@@ -1,5 +1,27 @@
 basePath: /
 definitions:
+  models.Question:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_edit:
+        type: boolean
+      question_text:
+        type: string
+      tutor_id:
+        type: integer
+    type: object
+  models.QuestionsSwaggerRequestBody:
+    properties:
+      is_edit:
+        type: boolean
+      question_text:
+        type: string
+      tutor_id:
+        type: integer
+    type: object
   models.Tutor:
     properties:
       email:
@@ -23,6 +45,135 @@ info:
   title: Knowledge Base API
   version: "1.0"
 paths:
+  /questions:
+    get:
+      description: Returns list of all questions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Question'
+            type: array
+      summary: Get all questions
+      tags:
+      - questions
+    post:
+      consumes:
+      - application/json
+      description: Create a new question with text, tutor_id and edit flag
+      parameters:
+      - description: Question data
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Question created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create new question
+      tags:
+      - questions
+  /questions/{id}:
+    delete:
+      description: Delete question by ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Question not found
+          schema:
+            type: string
+      summary: Delete question by ID
+      tags:
+      - questions
+    get:
+      description: Returns question by specified ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Question not found
+          schema:
+            type: string
+      summary: Get question by ID
+      tags:
+      - questions
+    put:
+      consumes:
+      - application/json
+      description: Update question with text, tutor_id and edit flag
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Question data
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Question updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "404":
+          description: Question not found
+          schema:
+            type: string
+      summary: Update question
+      tags:
+      - questions
   /tutors:
     get:
       description: Returns list of all tutors
@@ -137,7 +288,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Tutor created
+          description: Tutor updated
           schema:
             additionalProperties:
               type: string

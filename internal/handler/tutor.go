@@ -12,10 +12,10 @@ import (
 )
 
 type TutorHandler struct {
-	tutorService *service.Tutor
+	tutorService *service.TutorService
 }
 
-func NewTutorhandler(tutorService *service.Tutor) *TutorHandler {
+func NewTutorhandler(tutorService *service.TutorService) *TutorHandler {
 	return &TutorHandler{tutorService: tutorService}
 }
 
@@ -115,7 +115,7 @@ func (tutorHandler *TutorHandler) DeleteTutorByID(w http.ResponseWriter, r *http
 		return
 	}
 
-	//  Успешный ответ - 204 No Content
+	//  Успешный ответ - 204 No connect
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -171,7 +171,7 @@ func (tutorHandler *TutorHandler) PostTutorString(w http.ResponseWriter, r *http
 // @Produce json
 // @Param id path int true "Tutor ID"
 // @Param tutor body models.TutorSwaggerRequestBody true "Tutor data"
-// @Success 200 {object} map[string]string "Tutor created"
+// @Success 200 {object} map[string]string "Tutor updated"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 404 {string} string "Internal server error"
 // @Router /tutors/{id} [put]

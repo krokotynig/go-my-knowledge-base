@@ -27,16 +27,26 @@ func main() {
 
 	tutorService := service.NewTutor(db)
 	tutorHandler := handler.NewTutorhandler(tutorService)
+	questionService := service.NewQuestionServicer(db)
+	questionHandler := handler.NewQuestionHandler(questionService)
 
 	r := mux.NewRouter() // создание новго явновго роутера из пакета gorilla/mux
 
 	r.HandleFunc("/", handler.StatusHandler).Methods("GET")       // регистрация маршрутов в дефолтном роутере вроде , healthcheack
 	r.HandleFunc("/status", handler.StatusHandler).Methods("GET") // регистрация маршрутов , healthcheack
+
 	r.HandleFunc("/tutors", tutorHandler.GetAllTutors).Methods("GET")
 	r.HandleFunc("/tutors/{id}", tutorHandler.GetTutorByID).Methods("GET")
 	r.HandleFunc("/tutors/{id}", tutorHandler.DeleteTutorByID).Methods("DELETE") // в REST операции определяются HTTP методами, а не путями
 	r.HandleFunc("/tutors", tutorHandler.PostTutorString).Methods("POST")
 	r.HandleFunc("/tutors/{id}", tutorHandler.PutTutorString).Methods("PUT")
+
+	r.HandleFunc("/questions", questionHandler.GetAllQuestions).Methods("GET")
+	r.HandleFunc("/questions/{id}", questionHandler.GetQuestionByID).Methods("GET")
+	r.HandleFunc("/questions/{id}", questionHandler.DeleteQuestionByID).Methods("DELETE") // в REST операции определяются HTTP методами, а не путями
+	r.HandleFunc("/questions", questionHandler.PostQuestionString).Methods("POST")
+	r.HandleFunc("/questions/{id}", questionHandler.PutQuestionString).Methods("PUT")
+
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
 
 	err := database.RunMigrations(db) // вызов методов миграций через координатор

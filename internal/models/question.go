@@ -9,3 +9,9 @@ type Question struct {
 	CreatedAt    time.Time `db:"created_at" json:"created_at"`
 	IsEdit       bool      `db:"is_edit" json:"is_edit"`
 }
+
+type QuestionsSwaggerRequestBody struct {
+	QuestionText string `json:"question_text"`
+	TutorID      *int   `json:"tutor_id"`
+	IsEdit       bool   `json:"is_edit"`
+}
