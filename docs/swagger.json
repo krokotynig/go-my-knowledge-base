@@ -9,6 +9,200 @@
     "host": "localhost:2709",
     "basePath": "/",
     "paths": {
+        "/answers": {
+            "get": {
+                "description": "Returns list of all answers",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answers"
+                ],
+                "summary": "Get all answers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Answer"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new answer with text, tutor_id, question_id and edit flag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answers"
+                ],
+                "summary": "Create new answer",
+                "parameters": [
+                    {
+                        "description": "Answer data",
+                        "name": "answer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AnswersSwaggerRequestPostBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Answer created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/answers/{id}": {
+            "get": {
+                "description": "Returns answer by specified ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answers"
+                ],
+                "summary": "Get answer by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Answer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Answer"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Answer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update answer with text, tutor_id, question_id and edit flag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answers"
+                ],
+                "summary": "Update answer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Answer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Answer data",
+                        "name": "answer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AnswersSwaggerRequestPutBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Answer updated",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Answer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete answer by ID",
+                "tags": [
+                    "answers"
+                ],
+                "summary": "Delete answer by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Answer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Answer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/questions": {
             "get": {
                 "description": "Returns list of all questions",
@@ -50,7 +244,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.QuestionsSwaggerRequestBody"
+                            "$ref": "#/definitions/models.QuestionsSwaggerRequestPostBody"
                         }
                     }
                 ],
@@ -143,7 +337,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.QuestionsSwaggerRequestBody"
+                            "$ref": "#/definitions/models.QuestionsSwaggerRequestPutBody"
                         }
                     }
                 ],
@@ -401,6 +595,60 @@
         }
     },
     "definitions": {
+        "models.Answer": {
+            "type": "object",
+            "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_edit": {
+                    "type": "boolean"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.AnswersSwaggerRequestPostBody": {
+            "type": "object",
+            "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.AnswersSwaggerRequestPutBody": {
+            "type": "object",
+            "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
+                "is_edit": {
+                    "type": "boolean"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Question": {
             "type": "object",
             "properties": {
@@ -421,7 +669,18 @@
                 }
             }
         },
-        "models.QuestionsSwaggerRequestBody": {
+        "models.QuestionsSwaggerRequestPostBody": {
+            "type": "object",
+            "properties": {
+                "question_text": {
+                    "type": "string"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.QuestionsSwaggerRequestPutBody": {
             "type": "object",
             "properties": {
                 "is_edit": {

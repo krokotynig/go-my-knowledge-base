@@ -10,7 +10,7 @@ type QuestionService struct {
 	db *sql.DB
 }
 
-func NewQuestionServicer(db *sql.DB) *QuestionService {
+func NewQuestionService(db *sql.DB) *QuestionService {
 	return &QuestionService{db: db}
 }
 
@@ -71,15 +71,15 @@ func (questionService *QuestionService) DeleteByID(id int) error {
 	return nil
 }
 
-func (questionService *QuestionService) PostString(questionText string, tutorId *int, isEdit bool) (int, error) {
-	query := `insert into questions (question_text, tutor_id, is_edit) 
-              values ($1, $2, $3) returning id`
+func (questionService *QuestionService) PostString(questionText string, tutorId *int) (int, error) {
+	query := `insert into questions (question_text, tutor_id) 
+              values ($1, $2) returning id`
 
 	var id int
 
-	row := questionService.db.QueryRow(query, questionText, tutorId, isEdit)
+	row := questionService.db.QueryRow(query, questionText, tutorId)
 
-	err := row.Scan(&id) // заполним id
+	err := row.Scan(&id) // без is_edit, надо чтобы он fals был при создании
 	if err != nil {
 		return 0, err
 	}
@@ -88,6 +88,7 @@ func (questionService *QuestionService) PostString(questionText string, tutorId 
 }
 
 func (questionService *QuestionService) PutString(questionText string, tutorId *int, isEdit bool, id int) (models.Question, error) {
+	// тут с is_edit, чтобы было true по умолчанию, по умолчанию в теле запроса
 	query := `update questions 
               set question_text = $1, tutor_id = $2, is_edit = $3
               where id = $4

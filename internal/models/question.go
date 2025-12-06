@@ -10,7 +10,12 @@ type Question struct {
 	IsEdit       bool      `db:"is_edit" json:"is_edit"`
 }
 
-type QuestionsSwaggerRequestBody struct {
+type QuestionsSwaggerRequestPostBody struct {
+	QuestionText string `json:"question_text"`
+	TutorID      *int   `json:"tutor_id"`
+}
+
+type QuestionsSwaggerRequestPutBody struct {
 	QuestionText string `json:"question_text"`
 	TutorID      *int   `json:"tutor_id"`
 	IsEdit       bool   `json:"is_edit"`

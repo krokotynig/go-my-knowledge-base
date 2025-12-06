@@ -27,8 +27,12 @@ func main() {
 
 	tutorService := service.NewTutor(db)
 	tutorHandler := handler.NewTutorhandler(tutorService)
-	questionService := service.NewQuestionServicer(db)
+
+	questionService := service.NewQuestionService(db)
 	questionHandler := handler.NewQuestionHandler(questionService)
+
+	answerService := service.NewAnswerService(db)
+	answerHandler := handler.NewAnswerHandler(answerService)
 
 	r := mux.NewRouter() // создание новго явновго роутера из пакета gorilla/mux
 
@@ -43,9 +47,15 @@ func main() {
 
 	r.HandleFunc("/questions", questionHandler.GetAllQuestions).Methods("GET")
 	r.HandleFunc("/questions/{id}", questionHandler.GetQuestionByID).Methods("GET")
-	r.HandleFunc("/questions/{id}", questionHandler.DeleteQuestionByID).Methods("DELETE") // в REST операции определяются HTTP методами, а не путями
+	r.HandleFunc("/questions/{id}", questionHandler.DeleteQuestionByID).Methods("DELETE")
 	r.HandleFunc("/questions", questionHandler.PostQuestionString).Methods("POST")
 	r.HandleFunc("/questions/{id}", questionHandler.PutQuestionString).Methods("PUT")
+
+	r.HandleFunc("/answers", answerHandler.GetAllAnswers).Methods("GET")
+	r.HandleFunc("/answers/{id}", answerHandler.GetAnswerByID).Methods("GET")
+	r.HandleFunc("/answers/{id}", answerHandler.DeleteAnswerByID).Methods("DELETE")
+	r.HandleFunc("/answers", answerHandler.PostAnswerString).Methods("POST")
+	r.HandleFunc("/answers/{id}", answerHandler.PutAnswerString).Methods("PUT")
 
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
 

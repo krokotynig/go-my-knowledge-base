@@ -10,3 +10,18 @@ type Answer struct {
 	CreatedAt   time.Time `db:"created_at" json:"created_at"`
 	IsEdit      bool      `db:"is_edit" json:"is_edit"`
 }
+
+// Для создания ответа (POST)
+type AnswersSwaggerRequestPostBody struct {
+	AnswersText string `json:"answer_text"`
+	TutorID     *int   `json:"tutor_id,omitempty"`
+	QuestionID  int    `json:"question_id"`
+}
+
+// Для обновления ответа (PUT)
+type AnswersSwaggerRequestPutBody struct {
+	AnswersText string `json:"answer_text"`
+	TutorID     *int   `json:"tutor_id,omitempty"`
+	QuestionID  int    `json:"question_id"`
+	IsEdit      bool   `json:"is_edit"`
+}

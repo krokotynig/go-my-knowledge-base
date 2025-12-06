@@ -118,7 +118,7 @@ func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter
 // @Tags questions
 // @Accept json
 // @Produce json
-// @Param question body models.QuestionsSwaggerRequestBody true "Question data"
+// @Param question body models.QuestionsSwaggerRequestPostBody true "Question data"
 // @Success 201 {object} map[string]interface{} "Question created"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 500 {string} string "Internal server error"
@@ -143,7 +143,7 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 	}
 
 	// Вызов сервиса
-	id, err := questionHandler.questionService.PostString(question.QuestionText, question.TutorID, question.IsEdit)
+	id, err := questionHandler.questionService.PostString(question.QuestionText, question.TutorID)
 	if err != nil {
 		http.Error(w, "Failed to create question: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -164,7 +164,7 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 // @Accept json
 // @Produce json
 // @Param id path int true "Question ID"
-// @Param question body models.QuestionsSwaggerRequestBody true "Question data"
+// @Param question body models.QuestionsSwaggerRequestPutBody true "Question data"
 // @Success 200 {object} map[string]interface{} "Question updated"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 404 {string} string "Question not found"

@@ -1,5 +1,40 @@
 basePath: /
 definitions:
+  models.Answer:
+    properties:
+      answer_text:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_edit:
+        type: boolean
+      question_id:
+        type: integer
+      tutor_id:
+        type: integer
+    type: object
+  models.AnswersSwaggerRequestPostBody:
+    properties:
+      answer_text:
+        type: string
+      question_id:
+        type: integer
+      tutor_id:
+        type: integer
+    type: object
+  models.AnswersSwaggerRequestPutBody:
+    properties:
+      answer_text:
+        type: string
+      is_edit:
+        type: boolean
+      question_id:
+        type: integer
+      tutor_id:
+        type: integer
+    type: object
   models.Question:
     properties:
       created_at:
@@ -13,7 +48,14 @@ definitions:
       tutor_id:
         type: integer
     type: object
-  models.QuestionsSwaggerRequestBody:
+  models.QuestionsSwaggerRequestPostBody:
+    properties:
+      question_text:
+        type: string
+      tutor_id:
+        type: integer
+    type: object
+  models.QuestionsSwaggerRequestPutBody:
     properties:
       is_edit:
         type: boolean
@@ -45,6 +87,135 @@ info:
   title: Knowledge Base API
   version: "1.0"
 paths:
+  /answers:
+    get:
+      description: Returns list of all answers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Answer'
+            type: array
+      summary: Get all answers
+      tags:
+      - answers
+    post:
+      consumes:
+      - application/json
+      description: Create a new answer with text, tutor_id, question_id and edit flag
+      parameters:
+      - description: Answer data
+        in: body
+        name: answer
+        required: true
+        schema:
+          $ref: '#/definitions/models.AnswersSwaggerRequestPostBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Answer created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create new answer
+      tags:
+      - answers
+  /answers/{id}:
+    delete:
+      description: Delete answer by ID
+      parameters:
+      - description: Answer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Answer not found
+          schema:
+            type: string
+      summary: Delete answer by ID
+      tags:
+      - answers
+    get:
+      description: Returns answer by specified ID
+      parameters:
+      - description: Answer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Answer'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Answer not found
+          schema:
+            type: string
+      summary: Get answer by ID
+      tags:
+      - answers
+    put:
+      consumes:
+      - application/json
+      description: Update answer with text, tutor_id, question_id and edit flag
+      parameters:
+      - description: Answer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Answer data
+        in: body
+        name: answer
+        required: true
+        schema:
+          $ref: '#/definitions/models.AnswersSwaggerRequestPutBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Answer updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "404":
+          description: Answer not found
+          schema:
+            type: string
+      summary: Update answer
+      tags:
+      - answers
   /questions:
     get:
       description: Returns list of all questions
@@ -70,7 +241,7 @@ paths:
         name: question
         required: true
         schema:
-          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
+          $ref: '#/definitions/models.QuestionsSwaggerRequestPostBody'
       produces:
       - application/json
       responses:
@@ -154,7 +325,7 @@ paths:
         name: question
         required: true
         schema:
-          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
+          $ref: '#/definitions/models.QuestionsSwaggerRequestPutBody'
       produces:
       - application/json
       responses:
