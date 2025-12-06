@@ -26,7 +26,7 @@ func (tutorService *Tutor) GetAll() ([]models.Tutor, error) { //(s *Tutor) - р�
 	var tutors []models.Tutor
 	for rows.Next() {
 		var tutor models.Tutor
-		err := rows.Scan(&tutor.ID, &tutor.Fullname, &tutor.Email) // заполнения полей данынми
+		err := rows.Scan(&tutor.ID, &tutor.FullName, &tutor.Email) // заполнения полей данынми
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func (tutorService *Tutor) GetByID(id int) (models.Tutor, error) {
 	row := tutorService.db.QueryRow(query, id) // для получения одной строки. Вроде как автоматически закрывает соеединение
 	var tutor models.Tutor
 
-	err := row.Scan(&tutor.ID, &tutor.Fullname, &tutor.Email)
+	err := row.Scan(&tutor.ID, &tutor.FullName, &tutor.Email)
 	if err != nil {
 		return models.Tutor{}, err
 	}
@@ -58,7 +58,7 @@ func (tutorService *Tutor) DeleteByID(id int) error {
 		return err
 	}
 
-	rowsAffected, err := result.RowsAffected() // возвращение кол-ва удаленных строк
+	rowsAffected, err := result.RowsAffected() // возвращение кол-ва удаленных строк, проверяет, что запись существовала. На клиенте не нужно. Для 404
 	if err != nil {
 		return err
 	}
@@ -68,4 +68,39 @@ func (tutorService *Tutor) DeleteByID(id int) error {
 	}
 
 	return nil
+}
+
+func (tutorService *Tutor) PostString(fullName string, email string) (int, error) {
+	query := `insert into tutors (full_name, email) values
+			($1,$2) RETURNING id`
+
+	var id int
+
+	row := tutorService.db.QueryRow(query, fullName, email)
+
+	err := row.Scan(&id) // заполним id
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func (tutorService *Tutor) PutString(fullName string, email string, id int) (models.Tutor, error) {
+	query := `update tutors 
+			set 
+			full_name = $1, email = $2
+			where id = $3
+			RETURNING id, full_name, email`
+
+	var tutor models.Tutor
+	err := tutorService.db.QueryRow(query, fullName, email, id).Scan(
+		&tutor.ID, &tutor.FullName, &tutor.Email,
+	)
+
+	if err != nil {
+		return models.Tutor{}, err
+	}
+
+	return tutor, nil
 }

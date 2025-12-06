@@ -30,12 +30,13 @@ func main() {
 
 	r := mux.NewRouter() // создание новго явновго роутера из пакета gorilla/mux
 
-	// использование встроенного роутера net/http
 	r.HandleFunc("/", handler.StatusHandler).Methods("GET")       // регистрация маршрутов в дефолтном роутере вроде , healthcheack
 	r.HandleFunc("/status", handler.StatusHandler).Methods("GET") // регистрация маршрутов , healthcheack
 	r.HandleFunc("/tutors", tutorHandler.GetAllTutors).Methods("GET")
 	r.HandleFunc("/tutors/{id}", tutorHandler.GetTutorByID).Methods("GET")
 	r.HandleFunc("/tutors/{id}", tutorHandler.DeleteTutorByID).Methods("DELETE") // в REST операции определяются HTTP методами, а не путями
+	r.HandleFunc("/tutors", tutorHandler.PostTutorString).Methods("POST")
+	r.HandleFunc("/tutors/{id}", tutorHandler.PutTutorString).Methods("PUT")
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
 
 	err := database.RunMigrations(db) // вызов методов миграций через координатор
@@ -46,6 +47,7 @@ func main() {
 
 	log.Println(" ✅ База данных готова!")
 	log.Println("🚀 Запуск сервера на http://localhost:2709")
+
 	log.Println("📚 Swagger UI доступен на http://localhost:2709/swagger/index.html")
 
 	err = http.ListenAndServe(":2709", r) // блокирующая функция, после нее программа ждет http запросы

@@ -9,6 +9,13 @@ definitions:
       id:
         type: integer
     type: object
+  models.TutorSwaggerRequestBody:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+    type: object
 host: localhost:2709
 info:
   contact: {}
@@ -18,7 +25,7 @@ info:
 paths:
   /tutors:
     get:
-      description: Возвращает список всех тьюторов
+      description: Returns list of all tutors
       produces:
       - application/json
       responses:
@@ -28,7 +35,37 @@ paths:
             items:
               $ref: '#/definitions/models.Tutor'
             type: array
-      summary: Получить всех тьюторов
+      summary: Get all tutors
+      tags:
+      - tutors
+    post:
+      consumes:
+      - application/json
+      description: Create a new tutor with full name and email
+      parameters:
+      - description: Tutor data
+        in: body
+        name: tutor
+        required: true
+        schema:
+          $ref: '#/definitions/models.TutorSwaggerRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Tutor created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create new tutor
       tags:
       - tutors
   /tutors/{id}:
@@ -55,9 +92,9 @@ paths:
       tags:
       - tutors
     get:
-      description: Возвращает тьютора по указанному ID
+      description: Returns tutor by specified ID
       parameters:
-      - description: ID тьютора
+      - description: Tutor ID
         in: path
         name: id
         required: true
@@ -70,14 +107,50 @@ paths:
           schema:
             $ref: '#/definitions/models.Tutor'
         "400":
-          description: Неверный ID
+          description: Invalid ID
           schema:
             type: string
         "404":
-          description: Тьютор не найден
+          description: Tutor not found
           schema:
             type: string
-      summary: Получить тьютора по ID
+      summary: Get tutor by ID
+      tags:
+      - tutors
+    put:
+      consumes:
+      - application/json
+      description: Update tutor with full name and email
+      parameters:
+      - description: Tutor ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Tutor data
+        in: body
+        name: tutor
+        required: true
+        schema:
+          $ref: '#/definitions/models.TutorSwaggerRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tutor created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "404":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Update tutor
       tags:
       - tutors
 swagger: "2.0"

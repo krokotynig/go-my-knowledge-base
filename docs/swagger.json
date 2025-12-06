@@ -11,14 +11,14 @@
     "paths": {
         "/tutors": {
             "get": {
-                "description": "Возвращает список всех тьюторов",
+                "description": "Returns list of all tutors",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "tutors"
                 ],
-                "summary": "Получить всех тьюторов",
+                "summary": "Get all tutors",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -30,22 +30,67 @@
                         }
                     }
                 }
-            }
-        },
-        "/tutors/{id}": {
-            "get": {
-                "description": "Возвращает тьютора по указанному ID",
+            },
+            "post": {
+                "description": "Create a new tutor with full name and email",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "tutors"
                 ],
-                "summary": "Получить тьютора по ID",
+                "summary": "Create new tutor",
+                "parameters": [
+                    {
+                        "description": "Tutor data",
+                        "name": "tutor",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TutorSwaggerRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Tutor created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/tutors/{id}": {
+            "get": {
+                "description": "Returns tutor by specified ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tutors"
+                ],
+                "summary": "Get tutor by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID тьютора",
+                        "description": "Tutor ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -59,13 +104,67 @@
                         }
                     },
                     "400": {
-                        "description": "Неверный ID",
+                        "description": "Invalid ID",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "404": {
-                        "description": "Тьютор не найден",
+                        "description": "Tutor not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update tutor with full name and email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tutors"
+                ],
+                "summary": "Update tutor",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tutor ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Tutor data",
+                        "name": "tutor",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TutorSwaggerRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tutor created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "string"
                         }
@@ -119,6 +218,17 @@
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.TutorSwaggerRequestBody": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
                 }
             }
         }
