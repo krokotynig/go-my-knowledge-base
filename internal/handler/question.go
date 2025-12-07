@@ -119,8 +119,8 @@ func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// @Summary Create new question
-// @Description Create a new question with text, tutor_id and edit flag
+// @Summary Сreates a new question and records the version
+// @Description Create a new question with text, tutor_id. Create a new question_version with question_id, question_text, tutor_id, version_number
 // @Tags questions
 // @Accept json
 // @Produce json
@@ -149,7 +149,7 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 	// Вызов сервиса.
 	id, err := questionHandler.questionService.PostString(question.QuestionText, question.TutorID)
 	if err != nil {
-		http.Error(w, "Failed to create question: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to create question or question_version: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -166,8 +166,8 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 	})
 }
 
-// @Summary Update question
-// @Description Update question with text, tutor_id and edit flag
+// @Summary Update question and records the version
+// @Description Update question with text, tutor_id and edit flag.Create a new question_version with question_id, question_text, tutor_id, version_number
 // @Tags questions
 // @Accept json
 // @Produce json

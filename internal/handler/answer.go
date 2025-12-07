@@ -119,8 +119,8 @@ func (answerHandler *AnswerHandler) DeleteAnswerByID(w http.ResponseWriter, r *h
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// @Summary Create new answer
-// @Description Create a new answer with text, tutor_id, question_id and edit flag
+// @Summary Create new answer and records the version
+// @Description Create a new answer with text, tutor_id, question_id. Create a new answer_version with answer_id, answer_text, tutor_id, answer_number
 // @Tags answers
 // @Accept json
 // @Produce json
@@ -149,7 +149,7 @@ func (answerHandler *AnswerHandler) PostAnswerString(w http.ResponseWriter, r *h
 	// Вызов сервиса.
 	id, err := answerHandler.answerService.PostString(answer.AnswersText, answer.TutorID, answer.QuestionID)
 	if err != nil {
-		http.Error(w, "Failed to create answer: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to create answer or answer_version: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -166,8 +166,8 @@ func (answerHandler *AnswerHandler) PostAnswerString(w http.ResponseWriter, r *h
 	})
 }
 
-// @Summary Update answer
-// @Description Update answer with text, tutor_id, question_id and edit flag
+// @Summary Update answer and records the version
+// @Description Update answer with text, tutor_id, question_id and edit flag. Create a new answer_version with answer_id, answer_text, tutor_id, answer_number
 // @Tags answers
 // @Accept json
 // @Produce json

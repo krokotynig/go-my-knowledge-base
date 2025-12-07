@@ -15,6 +15,21 @@ definitions:
       tutor_id:
         type: integer
     type: object
+  models.AnswerVersion:
+    properties:
+      answer_id:
+        type: integer
+      answer_text:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      tutor_id:
+        type: integer
+      version_number:
+        type: integer
+    type: object
   models.AnswersSwaggerRequestPostBody:
     properties:
       answer_text:
@@ -46,6 +61,21 @@ definitions:
       question_text:
         type: string
       tutor_id:
+        type: integer
+    type: object
+  models.QuestionVersion:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      question_id:
+        type: integer
+      question_text:
+        type: string
+      tutor_id:
+        type: integer
+      version_number:
         type: integer
     type: object
   models.QuestionsSwaggerRequestPostBody:
@@ -103,6 +133,31 @@ info:
   title: Knowledge Base API
   version: "1.0"
 paths:
+  /answer-versions/{id}:
+    get:
+      description: Returns all versions of a specific answer by answer ID
+      parameters:
+      - description: Answer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AnswerVersion'
+            type: array
+        "400":
+          description: Invalid answer ID
+          schema:
+            type: string
+      summary: Get answer versions by answer ID
+      tags:
+      - answer-versions
   /answers:
     get:
       description: Returns list of all answers
@@ -121,7 +176,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new answer with text, tutor_id, question_id and edit flag
+      description: Create a new answer with text, tutor_id, question_id. Create a
+        new answer_version with answer_id, answer_text, tutor_id, answer_number
       parameters:
       - description: Answer data
         in: body
@@ -145,7 +201,7 @@ paths:
           description: Internal server error
           schema:
             type: string
-      summary: Create new answer
+      summary: Create new answer and records the version
       tags:
       - answers
   /answers/{id}:
@@ -200,7 +256,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update answer with text, tutor_id, question_id and edit flag
+      description: Update answer with text, tutor_id, question_id and edit flag. Create
+        a new answer_version with answer_id, answer_text, tutor_id, answer_number
       parameters:
       - description: Answer ID
         in: path
@@ -229,9 +286,34 @@ paths:
           description: Answer not found
           schema:
             type: string
-      summary: Update answer
+      summary: Update answer and records the version
       tags:
       - answers
+  /question-versions/{id}:
+    get:
+      description: Returns all versions of a specific question by question ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.QuestionVersion'
+            type: array
+        "400":
+          description: Invalid question ID
+          schema:
+            type: string
+      summary: Get question versions by question ID
+      tags:
+      - question-versions
   /questions:
     get:
       description: Returns list of all questions
@@ -250,7 +332,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new question with text, tutor_id and edit flag
+      description: Create a new question with text, tutor_id. Create a new question_version
+        with question_id, question_text, tutor_id, version_number
       parameters:
       - description: Question data
         in: body
@@ -274,7 +357,7 @@ paths:
           description: Internal server error
           schema:
             type: string
-      summary: Create new question
+      summary: Сreates a new question and records the version
       tags:
       - questions
   /questions/{id}:
@@ -329,7 +412,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update question with text, tutor_id and edit flag
+      description: Update question with text, tutor_id and edit flag.Create a new
+        question_version with question_id, question_text, tutor_id, version_number
       parameters:
       - description: Question ID
         in: path
@@ -358,7 +442,7 @@ paths:
           description: Question not found
           schema:
             type: string
-      summary: Update question
+      summary: Update question and records the version
       tags:
       - questions
   /tags:

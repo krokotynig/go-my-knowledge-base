@@ -15,6 +15,44 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/answer-versions/{id}": {
+            "get": {
+                "description": "Returns all versions of a specific answer by answer ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answer-versions"
+                ],
+                "summary": "Get answer versions by answer ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Answer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AnswerVersion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid answer ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/answers": {
             "get": {
                 "description": "Returns list of all answers",
@@ -38,7 +76,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new answer with text, tutor_id, question_id and edit flag",
+                "description": "Create a new answer with text, tutor_id, question_id. Create a new answer_version with answer_id, answer_text, tutor_id, answer_number",
                 "consumes": [
                     "application/json"
                 ],
@@ -48,7 +86,7 @@ const docTemplate = `{
                 "tags": [
                     "answers"
                 ],
-                "summary": "Create new answer",
+                "summary": "Create new answer and records the version",
                 "parameters": [
                     {
                         "description": "Answer data",
@@ -124,7 +162,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update answer with text, tutor_id, question_id and edit flag",
+                "description": "Update answer with text, tutor_id, question_id and edit flag. Create a new answer_version with answer_id, answer_text, tutor_id, answer_number",
                 "consumes": [
                     "application/json"
                 ],
@@ -134,7 +172,7 @@ const docTemplate = `{
                 "tags": [
                     "answers"
                 ],
-                "summary": "Update answer",
+                "summary": "Update answer and records the version",
                 "parameters": [
                     {
                         "type": "integer",
@@ -209,6 +247,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/question-versions/{id}": {
+            "get": {
+                "description": "Returns all versions of a specific question by question ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "question-versions"
+                ],
+                "summary": "Get question versions by question ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Question ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.QuestionVersion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid question ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/questions": {
             "get": {
                 "description": "Returns list of all questions",
@@ -232,7 +308,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new question with text, tutor_id and edit flag",
+                "description": "Create a new question with text, tutor_id. Create a new question_version with question_id, question_text, tutor_id, version_number",
                 "consumes": [
                     "application/json"
                 ],
@@ -242,7 +318,7 @@ const docTemplate = `{
                 "tags": [
                     "questions"
                 ],
-                "summary": "Create new question",
+                "summary": "Сreates a new question and records the version",
                 "parameters": [
                     {
                         "description": "Question data",
@@ -318,7 +394,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update question with text, tutor_id and edit flag",
+                "description": "Update question with text, tutor_id and edit flag.Create a new question_version with question_id, question_text, tutor_id, version_number",
                 "consumes": [
                     "application/json"
                 ],
@@ -328,7 +404,7 @@ const docTemplate = `{
                 "tags": [
                     "questions"
                 ],
-                "summary": "Update question",
+                "summary": "Update question and records the version",
                 "parameters": [
                     {
                         "type": "integer",
@@ -766,6 +842,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AnswerVersion": {
+            "type": "object",
+            "properties": {
+                "answer_id": {
+                    "type": "integer"
+                },
+                "answer_text": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                },
+                "version_number": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.AnswersSwaggerRequestPostBody": {
             "type": "object",
             "properties": {
@@ -813,6 +912,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.QuestionVersion": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_text": {
+                    "type": "string"
+                },
+                "tutor_id": {
+                    "type": "integer"
+                },
+                "version_number": {
                     "type": "integer"
                 }
             }

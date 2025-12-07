@@ -27,7 +27,7 @@ func (tagService *TagService) GetAll() ([]models.Tag, error) {
 		return nil, err
 	}
 
-	// Закрытие, чтобы не было уттечки соединений, надо закрыть.
+	// Закрытие, чтобы не было утечки соединений, надо закрыть.
 	defer rows.Close()
 
 	var tags []models.Tag

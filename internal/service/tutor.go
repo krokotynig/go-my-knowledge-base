@@ -27,7 +27,7 @@ func (tutorService *TutorService) GetAll() ([]models.Tutor, error) {
 		return nil, err
 	}
 
-	// Закрытие, чтобы не было уттечки соединений, надо закрыть.
+	// Закрытие, чтобы не было утечки соединений, надо закрыть.
 	defer rows.Close()
 
 	var tutors []models.Tutor

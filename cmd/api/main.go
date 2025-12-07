@@ -39,6 +39,12 @@ func main() {
 	tagService := service.NewTagService(db)
 	tagHandler := handler.NewTagHandler(tagService)
 
+	questionVersionService := service.NewQuestionVersionService(db)
+	questionVersionHandler := handler.NewQuestionVersionHandler(questionVersionService)
+
+	answerVersionService := service.NewAnswerVersionService(db)
+	answerVersionHandler := handler.NewAnswerVersionHandler(answerVersionService)
+
 	// в REST операции определяются HTTP методами, а не путями.
 
 	//Создание явновго роутера из пакета gorilla/mux.
@@ -74,6 +80,12 @@ func main() {
 	r.HandleFunc("/tags/{id}", tagHandler.GetTagByID).Methods("GET")
 	r.HandleFunc("/tags/{id}", tagHandler.DeleteTagByID).Methods("DELETE")
 	r.HandleFunc("/tags", tagHandler.PostTagString).Methods("POST")
+
+	//Регистрация маршрута question-versions.
+	r.HandleFunc("/question-versions/{id}", questionVersionHandler.GetAllQuestionVersionsByID).Methods("GET")
+
+	//Регистрация маршрута answer-versions.
+	r.HandleFunc("/answer-versions/{id}", answerVersionHandler.GetAllAnswerVersionsByID).Methods("GET")
 
 	//Регистрация муршрута swagger.
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")

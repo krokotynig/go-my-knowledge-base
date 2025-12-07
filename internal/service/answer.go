@@ -27,7 +27,7 @@ func (answerService *AnswerService) GetAll() ([]models.Answer, error) {
 		return nil, err
 	}
 
-	// Закрытие, чтобы не было уттечки соединений, надо закрыть.
+	// Закрытие, чтобы не было утечки соединений, надо закрыть.
 	defer rows.Close()
 
 	// Запись полученных данных из БД в массив формата []models.Answer.
@@ -91,21 +91,33 @@ func (answerService *AnswerService) DeleteByID(id int) error {
 
 func (answerService *AnswerService) PostString(answerText string, tutorId *int, questionId int) (int, error) {
 
+	var answerID int
+
 	//Создание sql запроса для появления новой записи в таблице овтетов.
 	query := `insert into answers (answer_text, tutor_id, question_id) 
               values ($1, $2, $3) returning id`
-
-	var id int
 
 	// Выполнение функции, которая проводит sql запрос и возвращает таблицу из одной строки.
 	row := answerService.db.QueryRow(query, answerText, tutorId, questionId)
 
 	// Получение id созданной записи.
-	err := row.Scan(&id)
+	err := row.Scan(&answerID)
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+
+	//Создание sql запроса для появления новой записи в таблице версий овтетов.
+	queryQuestionVersion := `insert into answer_versions
+		(answer_id, answer_text, tutor_id, version_number) 
+		values ($1, $2, $3, 1)`
+
+	// Выполнение функции, которая проводит sql запрос без возврата данных.
+	_, err = answerService.db.Exec(queryQuestionVersion, answerID, answerText, tutorId)
+	if err != nil {
+		return 0, fmt.Errorf("failed to save first version: %v", err)
+	}
+
+	return answerID, nil
 }
 
 func (answerService *AnswerService) PutString(answerText string, tutorId *int, questionId int, isEdit bool, id int) (models.Answer, error) {
@@ -124,6 +136,44 @@ func (answerService *AnswerService) PutString(answerText string, tutorId *int, q
 
 	if err != nil {
 		return models.Answer{}, err
+	}
+
+	//Создание sql запроса для появления новой записи в таблице версий ответов.
+	queryAnswerVersion := `insert into answer_versions 
+		(answer_id, answer_text, tutor_id, version_number) 
+		values ($1, $2, $3, $4)`
+
+	//Выполнение функции, которая вернет переменную типа models.QuestionVersion для получения version_number
+	answerVersion, err := answerService.getVersionByID(id)
+	if err != nil {
+		return models.Answer{}, fmt.Errorf("failed to save first version: %v", err)
+	}
+
+	answerVersion.VersionNumber += 1
+
+	// Выполнение функции, которая проводит sql запрос без возврата данных.
+	_, err = answerService.db.Exec(queryAnswerVersion, id, answerText, tutorId, answerVersion.VersionNumber)
+	if err != nil {
+		return models.Answer{}, fmt.Errorf("failed to save first version: %v", err)
+	}
+
+	return answer, nil
+}
+
+func (answerService *AnswerService) getVersionByID(id int) (models.AnswerVersion, error) {
+
+	//Создание sql запроса для получения данных по одному конкретному ответу.
+	var query string = `select max(version_number) from answer_versions where answer_id = $1`
+
+	// Выполнение функции, которая проводит sql запрос и возвращает таблицу из одной строки.
+	row := answerService.db.QueryRow(query, id)
+
+	var answer models.AnswerVersion
+
+	// Запись полученных данных из БД в перемнную типа  models.AnswerVersion.
+	err := row.Scan(&answer.VersionNumber)
+	if err != nil {
+		return models.AnswerVersion{}, err
 	}
 
 	return answer, nil
