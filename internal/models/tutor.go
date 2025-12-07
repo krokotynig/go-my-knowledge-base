@@ -6,7 +6,8 @@ type Tutor struct {
 	Email    string `db:"email" json:"email"`
 }
 
-type TutorSwaggerRequestBody struct { // Нужен для запросов в swagger
+// Модель для swagger POST и PUT.
+type TutorSwaggerRequestBody struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 }

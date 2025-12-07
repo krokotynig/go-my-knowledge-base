@@ -5,16 +5,17 @@ import (
 	"knowledge-base/internal/models"
 	"knowledge-base/internal/service"
 	"net/http"
-	"strconv" // преобразование строк в число
+	"strconv"
 
 	"github.com/gorilla/mux"
-	// gorilla/mux? Популярная для преоброзования url в число?
 )
 
+// Структура для работы со всеми ф-ями handler/tutor.go.
 type TutorHandler struct {
 	tutorService *service.TutorService
 }
 
+// Фунция для создания объекта типа TutorHandler.
 func NewTutorhandler(tutorService *service.TutorService) *TutorHandler {
 	return &TutorHandler{tutorService: tutorService}
 }
@@ -26,23 +27,18 @@ func NewTutorhandler(tutorService *service.TutorService) *TutorHandler {
 // @Success 200 {array} models.Tutor
 // @Router /tutors [get]
 func (tutorHandler *TutorHandler) GetAllTutors(w http.ResponseWriter, r *http.Request) {
-	// Проверяем метод запроса, с gorilla/mux не нухно
-	// if r.Method != http.MethodGet {
-	// 	http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-	// 	return
-	// }
 
-	// Вызываем сервисный слой
+	// Вызов сервиса.
 	tutors, err := tutorHandler.tutorService.GetAll()
 	if err != nil {
 		http.Error(w, "Ошибка получения тьюторов: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Устанавливаем заголовок JSON
-	w.Header().Set("Content-Type", "application/json") // установка заголовка
+	// Устанавливаем заголовок JSON.
+	w.Header().Set("Content-Type", "application/json")
 
-	// Кодируем результат в JSON и отправляем
+	// Кодируем результат в JSON фомат и возвращаем.
 	err = json.NewEncoder(w).Encode(tutors)
 	if err != nil {
 		http.Error(w, "Ошибка кодирования JSON: "+err.Error(), http.StatusInternalServerError)
@@ -61,23 +57,28 @@ func (tutorHandler *TutorHandler) GetAllTutors(w http.ResponseWriter, r *http.Re
 // @Router /tutors/{id} [get]
 func (tutorHandler *TutorHandler) GetTutorByID(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r) // "/tutors/5"
-	idStr := vars["id"] // в шаблоне парамертр называется id
+	//Разбиение пути handler на части.
+	vars := mux.Vars(r)
+	idStr := vars["id"]
 
-	id, err := strconv.Atoi(idStr) //преобразование строк в число
+	//Преобразование строк в число.
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	tutor, err := tutorHandler.tutorService.GetByID(id)
 	if err != nil {
 		http.Error(w, "Тьютор не найден", http.StatusNotFound)
 		return
 	}
 
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
 
+	// Кодируем результат в JSON фомат и возвращаем.
 	err = json.NewEncoder(w).Encode(tutor)
 	if err != nil {
 		http.Error(w, "Ошибка кодирования JSON: "+err.Error(), http.StatusInternalServerError)
@@ -95,27 +96,26 @@ func (tutorHandler *TutorHandler) GetTutorByID(w http.ResponseWriter, r *http.Re
 // @Router /tutors/{id} [delete]
 func (tutorHandler *TutorHandler) DeleteTutorByID(w http.ResponseWriter, r *http.Request) {
 
-	// if r.Method != http.MethodDelete {
-	// 	http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-	// 	return
-	// }
+	//Разбиение пути handler на части
+	vars := mux.Vars(r)
+	idStr := vars["id"]
 
-	vars := mux.Vars(r) // "/tutors/5"
-	idStr := vars["id"] // в шаблоне парамертр называется id
-
-	id, err := strconv.Atoi(idStr) //преобразование строк в число
+	//Преобразование строк в число.
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	err = tutorHandler.tutorService.DeleteByID(id)
 	if err != nil {
 		http.Error(w, "Тьютор не найден", http.StatusNotFound)
 		return
 	}
 
-	//  Успешный ответ - 204 No connect
+	//Возврат кода операции.
+	//  Успешный ответ - 204 No connect для удаления.
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -130,13 +130,11 @@ func (tutorHandler *TutorHandler) DeleteTutorByID(w http.ResponseWriter, r *http
 // @Failure 500 {string} string "Internal server error"
 // @Router /tutors [post]
 func (tutorHandler *TutorHandler) PostTutorString(w http.ResponseWriter, r *http.Request) {
-	// Проверка метода не нужна - Gorilla Mux уже гарантирует POST
 
-	// Парсим JSON из тела запроса
 	var tutor models.Tutor
 
+	//Преобразование JSON данных в формат структуры models.Tutor.
 	err := json.NewDecoder(r.Body).Decode(&tutor)
-
 	if err != nil {
 		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 		return
@@ -148,17 +146,21 @@ func (tutorHandler *TutorHandler) PostTutorString(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Вызов сервиса
+	// Вызов сервиса.
 	id, err := tutorHandler.tutorService.PostString(tutor.FullName, tutor.Email)
 	if err != nil {
 		http.Error(w, "Failed to create tutor: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Ответ
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
+
+	//Возврат кода операции.
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]interface{}{ // используем словарь для того, чтобы отдать json (interface{} - что то типа object)
+
+	// Кодируем результат в JSON фомат.
+	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":      id,
 		"message": "Tutor created successfully",
 	})
@@ -177,38 +179,46 @@ func (tutorHandler *TutorHandler) PostTutorString(w http.ResponseWriter, r *http
 // @Router /tutors/{id} [put]
 func (tutorHandler *TutorHandler) PutTutorString(w http.ResponseWriter, r *http.Request) {
 
+	//Разбиение пути handler на части.
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 
+	//Преобразование строк в число.
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
-	var tutor models.Tutor
+	var tutor models.TutorSwaggerRequestBody
 
+	//Преобразование JSON данных в формат структуры models.Tutor.
 	err = json.NewDecoder(r.Body).Decode(&tutor)
-
 	if err != nil {
 		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Валидация.
 	if tutor.FullName == "" || tutor.Email == "" {
 		http.Error(w, "full_name and email are required", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	updatedTutor, err := tutorHandler.tutorService.PutString(tutor.FullName, tutor.Email, id)
 	if err != nil {
 		http.Error(w, "Тьютор не найден", http.StatusNotFound)
 		return
 	}
 
-	// Ответ
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
+
+	//Возврат кода операции.
 	w.WriteHeader(http.StatusOK)
+
+	// Кодируем результат в JSON фомат.
 	json.NewEncoder(w).Encode(map[string]string{
 		"full_name": updatedTutor.FullName,
 		"email":     updatedTutor.Email,

@@ -64,6 +64,22 @@ definitions:
       tutor_id:
         type: integer
     type: object
+  models.Tag:
+    properties:
+      id:
+        type: integer
+      tag:
+        type: string
+      tutor_id:
+        type: integer
+    type: object
+  models.TagSwaggerRequestBody:
+    properties:
+      tag:
+        type: string
+      tutor_id:
+        type: integer
+    type: object
   models.Tutor:
     properties:
       email:
@@ -345,6 +361,100 @@ paths:
       summary: Update question
       tags:
       - questions
+  /tags:
+    get:
+      description: Returns list of all tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+      summary: Get all tags
+      tags:
+      - tags
+    post:
+      consumes:
+      - application/json
+      description: Create a new tag with tag name and optional tutor_id
+      parameters:
+      - description: Tag data
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/models.TagSwaggerRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Tag created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create new tag
+      tags:
+      - tags
+  /tags/{id}:
+    delete:
+      description: Delete tag by ID (cascades from questions_tags)
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Tag not found
+          schema:
+            type: string
+      summary: Delete tag by ID
+      tags:
+      - tags
+    get:
+      description: Returns tag by specified ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Tag not found
+          schema:
+            type: string
+      summary: Get tag by ID
+      tags:
+      - tags
   /tutors:
     get:
       description: Returns list of all tutors

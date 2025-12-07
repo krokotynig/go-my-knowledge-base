@@ -10,11 +10,13 @@ type Question struct {
 	IsEdit       bool      `db:"is_edit" json:"is_edit"`
 }
 
+// Модель для swagger записи POST
 type QuestionsSwaggerRequestPostBody struct {
 	QuestionText string `json:"question_text"`
 	TutorID      *int   `json:"tutor_id"`
 }
 
+// Модель для swagger записи PUT
 type QuestionsSwaggerRequestPutBody struct {
 	QuestionText string `json:"question_text"`
 	TutorID      *int   `json:"tutor_id"`

@@ -10,10 +10,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Структура для работы со всеми ф-ями handler/questions.go.
 type QuestionHandler struct {
 	questionService *service.QuestionService
 }
 
+// Фунция для создания объекта типа QuestionHandler.
 func NewQuestionHandler(questionService *service.QuestionService) *QuestionHandler {
 	return &QuestionHandler{questionService: questionService}
 }
@@ -26,17 +28,17 @@ func NewQuestionHandler(questionService *service.QuestionService) *QuestionHandl
 // @Router /questions [get]
 func (questionHandler *QuestionHandler) GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 
-	// Вызываем сервисный слой
+	// Вызов сервиса.
 	questions, err := questionHandler.questionService.GetAll()
 	if err != nil {
 		http.Error(w, "Ошибка получения вопросов: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Устанавливаем заголовок JSON
-	w.Header().Set("Content-Type", "application/json") // установка заголовка
+	// Устанавливаем заголовок JSON.
+	w.Header().Set("Content-Type", "application/json")
 
-	// Кодируем результат в JSON и отправляем
+	// Кодируем результат в JSON фомат и возвращаем.
 	err = json.NewEncoder(w).Encode(questions)
 	if err != nil {
 		http.Error(w, "Ошибка кодирования JSON: "+err.Error(), http.StatusInternalServerError)
@@ -55,23 +57,28 @@ func (questionHandler *QuestionHandler) GetAllQuestions(w http.ResponseWriter, r
 // @Router /questions/{id} [get]
 func (questionHandler *QuestionHandler) GetQuestionByID(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r) // "/questions/5"
-	idStr := vars["id"] // в шаблоне парамертр называется id
+	//Разбиение пути handler на части.
+	vars := mux.Vars(r)
+	idStr := vars["id"]
 
-	id, err := strconv.Atoi(idStr) //преобразование строк в число
+	//Преобразование строк в число.
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	question, err := questionHandler.questionService.GetByID(id)
 	if err != nil {
 		http.Error(w, "Вопрос не найден", http.StatusNotFound)
 		return
 	}
 
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
 
+	// Кодируем результат в JSON фомат и возвращаем.
 	err = json.NewEncoder(w).Encode(question)
 	if err != nil {
 		http.Error(w, "Ошибка кодирования JSON: "+err.Error(), http.StatusInternalServerError)
@@ -89,27 +96,26 @@ func (questionHandler *QuestionHandler) GetQuestionByID(w http.ResponseWriter, r
 // @Router /questions/{id} [delete]
 func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter, r *http.Request) {
 
-	// if r.Method != http.MethodDelete {
-	// 	http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-	// 	return
-	// }
+	//Разбиение пути handler на части.
+	vars := mux.Vars(r)
+	idStr := vars["id"]
 
-	vars := mux.Vars(r) // "/questions/5"
-	idStr := vars["id"] // в шаблоне парамертр называется id
-
-	id, err := strconv.Atoi(idStr) //преобразование строк в число
+	//Преобразование строк в число.
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	err = questionHandler.questionService.DeleteByID(id)
 	if err != nil {
 		http.Error(w, "Вопрос не найден", http.StatusNotFound)
 		return
 	}
 
-	//  Успешный ответ - 204 No connect
+	//Возврат кода операции.
+	//  Успешный ответ - 204 No connect для удаления.
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -124,13 +130,11 @@ func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter
 // @Failure 500 {string} string "Internal server error"
 // @Router /questions [post]
 func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter, r *http.Request) {
-	// Проверка метода не нужна - Gorilla Mux уже гарантирует POST
 
-	// Парсим JSON из тела запроса
 	var question models.Question
 
+	//Преобразование JSON данных в формат структуры models.Question.
 	err := json.NewDecoder(r.Body).Decode(&question)
-
 	if err != nil {
 		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 		return
@@ -142,16 +146,20 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 		return
 	}
 
-	// Вызов сервиса
+	// Вызов сервиса.
 	id, err := questionHandler.questionService.PostString(question.QuestionText, question.TutorID)
 	if err != nil {
 		http.Error(w, "Failed to create question: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Ответ
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
+
+	//Возврат кода операции.
 	w.WriteHeader(http.StatusCreated)
+
+	// Кодируем результат в JSON фомат.
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":      id,
 		"message": "Question created successfully",
@@ -170,9 +178,12 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 // @Failure 404 {string} string "Question not found"
 // @Router /questions/{id} [put]
 func (questionHandler *QuestionHandler) PutQuestionString(w http.ResponseWriter, r *http.Request) {
+
+	//Разбиение пути handler на части
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 
+	//Преобразование строк в число.
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Неверный ID", http.StatusBadRequest)
@@ -181,25 +192,33 @@ func (questionHandler *QuestionHandler) PutQuestionString(w http.ResponseWriter,
 
 	var question models.Question
 
+	//Преобразование JSON данных в формат структуры models.Question.
 	err = json.NewDecoder(r.Body).Decode(&question)
 	if err != nil {
 		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Валидация.
 	if question.QuestionText == "" {
 		http.Error(w, "question_text is required", http.StatusBadRequest)
 		return
 	}
 
+	// Вызов сервиса.
 	updatedQuestion, err := questionHandler.questionService.PutString(question.QuestionText, question.TutorID, question.IsEdit, id)
 	if err != nil {
 		http.Error(w, "Вопрос не найден", http.StatusNotFound)
 		return
 	}
 
+	// Устанавливаем заголовок JSON.
 	w.Header().Set("Content-Type", "application/json")
+
+	//Возврат кода операции.
 	w.WriteHeader(http.StatusOK)
+
+	// Кодируем результат в JSON фомат.
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"question_text": updatedQuestion.QuestionText,
 		"tutor_id":      updatedQuestion.TutorID,

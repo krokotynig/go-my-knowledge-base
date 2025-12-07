@@ -5,3 +5,9 @@ type Tag struct {
 	TutorID *int   `db:"tutor_id" json:"tutor_id"`
 	Tag     string `db:"tag" json:"tag"`
 }
+
+// Модель для swagger POST и PUT.
+type TagSwaggerRequestBody struct {
+	TutorID *int   `json:"tutor_id"`
+	Tag     string `json:"tag"`
+}

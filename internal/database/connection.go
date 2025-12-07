@@ -7,34 +7,35 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq" // драйвер
+	_ "github.com/lib/pq" // драйвер дработы c postgres. Не нужен при работе с "database/sql" в других пакетах.
 )
 
 func Connect() *sql.DB {
 
-	// типа процедура, но не процедура, тут все ф-я
-	err := godotenv.Load("../../.env") // относительный
+	err := godotenv.Load("../../.env")
 	if err != nil {
 		log.Fatal("Ошибка загрузки .env", err)
 	}
 
+	// Получение env в память переменных без hardcode
 	var dbHost string = "localhost"
 	var dbName string = os.Getenv("POSTGRES_DB")
 	var dbUser string = os.Getenv("POSTGRES_USER")
 	var dbPassword string = os.Getenv("POSTGRES_PASSWORD")
 	var dbPort string = os.Getenv("POSTGRES_PORT")
 
+	// Url, строка для подключения к БД. Потом ее парсит "database/sql"
 	var dsn string = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		dbUser, dbPassword, dbHost, dbPort, dbName) // url, строка подключения к БД  потом ее парсит "database/sql"
+		dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	//*sql.DB типа указатель на поля структуры, без создания ее копий
-	db, err := sql.Open("postgres", dsn) //db это результат работы метода Open. Он как бы создает DB
+	//db это результат работы метода Open. Он как бы создает DB. Ключевая сущность проекта, нужная для работы с BD.
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Ошибка подключения к БД:", err)
 	}
 
-	// err уже объявлена, поэтому "="
-	err = db.Ping() // Ping проверяет, что соединение с базой данных все еще работает, и при необходимости устанавливает соединение.
+	// Ping проверяет, что соединение с базой данных все еще работает, и при необходимости устанавливает соединение.
+	err = db.Ping()
 	if err != nil {
 		log.Fatal("БД не отвечает:", err)
 	}

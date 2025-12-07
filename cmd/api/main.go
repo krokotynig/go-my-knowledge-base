@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "knowledge-base/docs" // импорт docs
+	_ "knowledge-base/docs"
 	"knowledge-base/internal/database"
 	"knowledge-base/internal/handler"
 	"knowledge-base/internal/service"
@@ -22,9 +22,11 @@ import (
 func main() {
 
 	db := database.Connect()
-	// закроет при выходе из программы
-	defer db.Close() // defer отложенное действие к концу ф-и Close просто закрывает базу данных
 
+	// Закрытие соединения при выходе из программы.
+	defer db.Close()
+
+	// Создание объектов, отвечающих за работу получения и добовалнея данных в БД - service и за логику handlers.
 	tutorService := service.NewTutor(db)
 	tutorHandler := handler.NewTutorhandler(tutorService)
 
@@ -34,32 +36,50 @@ func main() {
 	answerService := service.NewAnswerService(db)
 	answerHandler := handler.NewAnswerHandler(answerService)
 
-	r := mux.NewRouter() // создание новго явновго роутера из пакета gorilla/mux
+	tagService := service.NewTagService(db)
+	tagHandler := handler.NewTagHandler(tagService)
 
-	r.HandleFunc("/", handler.StatusHandler).Methods("GET")       // регистрация маршрутов в дефолтном роутере вроде , healthcheack
-	r.HandleFunc("/status", handler.StatusHandler).Methods("GET") // регистрация маршрутов , healthcheack
+	// в REST операции определяются HTTP методами, а не путями.
 
+	//Создание явновго роутера из пакета gorilla/mux.
+	r := mux.NewRouter()
+
+	//Регистрация базового маршрута.
+	r.HandleFunc("/", handler.StatusHandler).Methods("GET")
+	r.HandleFunc("/status", handler.StatusHandler).Methods("GET")
+
+	//Регистрация муршрута tutors.
 	r.HandleFunc("/tutors", tutorHandler.GetAllTutors).Methods("GET")
 	r.HandleFunc("/tutors/{id}", tutorHandler.GetTutorByID).Methods("GET")
-	r.HandleFunc("/tutors/{id}", tutorHandler.DeleteTutorByID).Methods("DELETE") // в REST операции определяются HTTP методами, а не путями
+	r.HandleFunc("/tutors/{id}", tutorHandler.DeleteTutorByID).Methods("DELETE")
 	r.HandleFunc("/tutors", tutorHandler.PostTutorString).Methods("POST")
 	r.HandleFunc("/tutors/{id}", tutorHandler.PutTutorString).Methods("PUT")
 
+	//Регистрация муршрута questions.
 	r.HandleFunc("/questions", questionHandler.GetAllQuestions).Methods("GET")
 	r.HandleFunc("/questions/{id}", questionHandler.GetQuestionByID).Methods("GET")
 	r.HandleFunc("/questions/{id}", questionHandler.DeleteQuestionByID).Methods("DELETE")
 	r.HandleFunc("/questions", questionHandler.PostQuestionString).Methods("POST")
 	r.HandleFunc("/questions/{id}", questionHandler.PutQuestionString).Methods("PUT")
 
+	//Регистрация муршрута answers.
 	r.HandleFunc("/answers", answerHandler.GetAllAnswers).Methods("GET")
 	r.HandleFunc("/answers/{id}", answerHandler.GetAnswerByID).Methods("GET")
 	r.HandleFunc("/answers/{id}", answerHandler.DeleteAnswerByID).Methods("DELETE")
 	r.HandleFunc("/answers", answerHandler.PostAnswerString).Methods("POST")
 	r.HandleFunc("/answers/{id}", answerHandler.PutAnswerString).Methods("PUT")
 
+	//Регистрация муршрута tags.
+	r.HandleFunc("/tags", tagHandler.GetAllTags).Methods("GET")
+	r.HandleFunc("/tags/{id}", tagHandler.GetTagByID).Methods("GET")
+	r.HandleFunc("/tags/{id}", tagHandler.DeleteTagByID).Methods("DELETE")
+	r.HandleFunc("/tags", tagHandler.PostTagString).Methods("POST")
+
+	//Регистрация муршрута swagger.
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
 
-	err := database.RunMigrations(db) // вызов методов миграций через координатор
+	//Вызов методов миграций через координатор "RunMigrations.
+	err := database.RunMigrations(db)
 	if err != nil {
 		log.Fatal("Ошибка миграций:", err)
 
@@ -70,7 +90,8 @@ func main() {
 
 	log.Println("📚 Swagger UI доступен на http://localhost:2709/swagger/index.html")
 
-	err = http.ListenAndServe(":2709", r) // блокирующая функция, после нее программа ждет http запросы
+	//Блокирующая функция, после нее программа ждет http запросы.
+	err = http.ListenAndServe(":2709", r)
 	if err != nil {
 		log.Printf("❌ Ошибка запускас ервера: %v\n", err)
 	}

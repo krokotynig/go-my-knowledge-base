@@ -11,14 +11,14 @@ type Answer struct {
 	IsEdit      bool      `db:"is_edit" json:"is_edit"`
 }
 
-// Для создания ответа (POST)
+// Модель для swagger записи POST
 type AnswersSwaggerRequestPostBody struct {
 	AnswersText string `json:"answer_text"`
 	TutorID     *int   `json:"tutor_id,omitempty"`
 	QuestionID  int    `json:"question_id"`
 }
 
-// Для обновления ответа (PUT)
+// Модель для swagger записи PUT
 type AnswersSwaggerRequestPutBody struct {
 	AnswersText string `json:"answer_text"`
 	TutorID     *int   `json:"tutor_id,omitempty"`

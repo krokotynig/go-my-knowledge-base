@@ -2,7 +2,8 @@ package database
 
 import "database/sql"
 
-func RunMigrations(db *sql.DB) error { // координатор
+// Создание координатора, кторый сразу вызовет 2 пакета запросов на создание таблиц и их заполнение.
+func RunMigrations(db *sql.DB) error {
 	if err := CreateTables(db); err != nil {
 		return err
 	}
