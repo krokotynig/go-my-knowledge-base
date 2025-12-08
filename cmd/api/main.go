@@ -67,14 +67,14 @@ func main() {
 	//Регистрация муршрута questions.
 	r.HandleFunc("/questions", questionHandler.GetAllQuestions).Methods("GET")
 	r.HandleFunc("/questions/{id}", questionHandler.GetQuestionByID).Methods("GET")
-	r.HandleFunc("/questions/{id}", questionHandler.DeleteQuestionByID).Methods("DELETE")
+	r.HandleFunc("/questions/{id}/delete-by-tutor/{delete-by}", questionHandler.DeleteQuestionByID).Methods("DELETE")
 	r.HandleFunc("/questions", questionHandler.PostQuestionString).Methods("POST")
 	r.HandleFunc("/questions/{id}", questionHandler.PutQuestionString).Methods("PUT")
 
 	//Регистрация муршрута answers.
 	r.HandleFunc("/answers", answerHandler.GetAllAnswers).Methods("GET")
 	r.HandleFunc("/answers/{id}", answerHandler.GetAnswerByID).Methods("GET")
-	r.HandleFunc("/answers/{id}", answerHandler.DeleteAnswerByID).Methods("DELETE")
+	r.HandleFunc("/answers/{id}/delete-by-tutor/{delete-by}", answerHandler.DeleteAnswerByID).Methods("DELETE")
 	r.HandleFunc("/answers", answerHandler.PostAnswerString).Methods("POST")
 	r.HandleFunc("/answers/{id}", answerHandler.PutAnswerString).Methods("PUT")
 

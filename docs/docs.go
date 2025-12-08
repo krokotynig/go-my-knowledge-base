@@ -212,18 +212,27 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/answers/{id}/delete-by-tutor/{delete-by}": {
             "delete": {
-                "description": "Delete answer by ID",
+                "description": "Delete answer by ID and mark all answer versions as deleted with tutor who performed deletion",
                 "tags": [
                     "answers"
                 ],
-                "summary": "Delete answer by ID",
+                "summary": "Delete answer by ID with version tracking",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Answer ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tutor ID who deleted the answer",
+                        "name": "delete-by",
                         "in": "path",
                         "required": true
                     }
@@ -444,18 +453,27 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/questions/{id}/delete-by-tutor/{delete-by}": {
             "delete": {
-                "description": "Delete question by ID",
+                "description": "Delete question by ID and mark versions as deleted",
                 "tags": [
                     "questions"
                 ],
-                "summary": "Delete question by ID",
+                "summary": "Delete question",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Question ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tutor ID who deleted the question",
+                        "name": "delete-by",
                         "in": "path",
                         "required": true
                     }
@@ -897,7 +915,16 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "delete_by_tutor": {
+                    "type": "integer"
+                },
                 "id": {
+                    "type": "integer"
+                },
+                "is_delete": {
+                    "type": "boolean"
+                },
+                "question_id": {
                     "type": "integer"
                 },
                 "tutor_id": {
@@ -965,8 +992,14 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "delete_by_tutor": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "is_delete": {
+                    "type": "boolean"
                 },
                 "question_id": {
                     "type": "integer"

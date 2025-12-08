@@ -64,13 +64,13 @@ func (answerService *AnswerService) GetByID(id int) (models.Answer, error) {
 	return answer, nil
 }
 
-func (answerService *AnswerService) DeleteByID(id int) error {
+func (answerService *AnswerService) DeleteByID(id int, deleteByTutor int) error {
 
 	//Создание sql запроса для удаления данных одного кокретного овтета.
-	query := `delete from answers where id = $1`
+	queryDelete := `delete from answers where id = $1`
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
-	result, err := answerService.db.Exec(query, id)
+	result, err := (answerService.db.Exec(queryDelete, id))
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,15 @@ func (answerService *AnswerService) DeleteByID(id int) error {
 
 	//Проверка было ли удаление строки. Если rowsAffected = 0, то не было.
 	if rowsAffected == 0 {
-		return fmt.Errorf("answer with id %d not found", id)
+		return fmt.Errorf("question with id %d not found", id)
+	}
+
+	//Создание sql запроса для учета удаления в версиях.
+	queryUpdateVersions := `update answer_versions set is_delete = true, delete_by_tutor = $1 where answer_id = $2`
+
+	_, err = answerService.db.Exec(queryUpdateVersions, deleteByTutor, id)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -108,11 +116,11 @@ func (answerService *AnswerService) PostString(answerText string, tutorId *int, 
 
 	//Создание sql запроса для появления новой записи в таблице версий овтетов.
 	queryQuestionVersion := `insert into answer_versions
-		(answer_id, answer_text, tutor_id, version_number) 
-		values ($1, $2, $3, 1)`
+		(answer_id, answer_text, question_id, tutor_id, version_number) 
+		values ($1, $2, $3, $4, 1)`
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
-	_, err = answerService.db.Exec(queryQuestionVersion, answerID, answerText, tutorId)
+	_, err = answerService.db.Exec(queryQuestionVersion, answerID, answerText, questionId, tutorId)
 	if err != nil {
 		return 0, fmt.Errorf("failed to save first version: %v", err)
 	}
@@ -140,8 +148,8 @@ func (answerService *AnswerService) PutString(answerText string, tutorId *int, q
 
 	//Создание sql запроса для появления новой записи в таблице версий ответов.
 	queryAnswerVersion := `insert into answer_versions 
-		(answer_id, answer_text, tutor_id, version_number) 
-		values ($1, $2, $3, $4)`
+		(answer_id, answer_text, question_id, tutor_id, version_number) 
+		values ($1, $2, $3, $4, $5)`
 
 	//Выполнение функции, которая вернет переменную типа models.QuestionVersion для получения version_number
 	answerVersion, err := answerService.getVersionByID(id)
@@ -152,7 +160,7 @@ func (answerService *AnswerService) PutString(answerText string, tutorId *int, q
 	answerVersion.VersionNumber += 1
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
-	_, err = answerService.db.Exec(queryAnswerVersion, id, answerText, tutorId, answerVersion.VersionNumber)
+	_, err = answerService.db.Exec(queryAnswerVersion, id, answerText, questionId, tutorId, answerVersion.VersionNumber)
 	if err != nil {
 		return models.Answer{}, fmt.Errorf("failed to save first version: %v", err)
 	}

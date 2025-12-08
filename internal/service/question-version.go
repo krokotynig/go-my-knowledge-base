@@ -18,7 +18,7 @@ func NewQuestionVersionService(db *sql.DB) *QuestionVersionService {
 func (questionVersionService *QuestionVersionService) GetAllByID(id int) ([]models.QuestionVersion, error) {
 
 	//Создание sql запроса для получения данных о версиях конкретного вопроса.
-	var query string = `select id, question_id, question_text, tutor_id, created_at, version_number from question_versions where question_id = $1 order by version_number`
+	var query string = `select id, question_id, question_text, tutor_id, created_at, version_number, is_delete, delete_by_tutor from question_versions where question_id = $1 order by version_number`
 
 	// Выполнение функции, которая проводит sql запрос и возвращает таблицу с несколькими строками.
 	rows, err := questionVersionService.db.Query(query, id)
@@ -34,7 +34,7 @@ func (questionVersionService *QuestionVersionService) GetAllByID(id int) ([]mode
 	// Запись полученных данных из БД в массив формата []models.QuestionVersion.
 	for rows.Next() {
 		var questionVersion models.QuestionVersion
-		err := rows.Scan(&questionVersion.ID, &questionVersion.QuestionID, &questionVersion.QuestionText, &questionVersion.TutorID, &questionVersion.CreatedAt, &questionVersion.VersionNumber)
+		err := rows.Scan(&questionVersion.ID, &questionVersion.QuestionID, &questionVersion.QuestionText, &questionVersion.TutorID, &questionVersion.CreatedAt, &questionVersion.VersionNumber, &questionVersion.IsDelete, &questionVersion.DeleteByTutor)
 		if err != nil {
 			return nil, err
 		}

@@ -86,19 +86,21 @@ func (answerHandler *AnswerHandler) GetAnswerByID(w http.ResponseWriter, r *http
 	}
 }
 
-// @Summary Delete answer by ID
-// @Description Delete answer by ID
+// @Summary Delete answer by ID with version tracking
+// @Description Delete answer by ID and mark all answer versions as deleted with tutor who performed deletion
 // @Tags answers
 // @Param id path int true "Answer ID"
+// @Param delete-by path int true "Tutor ID who deleted the answer"
 // @Success 204
 // @Failure 400 {string} string "Invalid ID"
 // @Failure 404 {string} string "Answer not found"
-// @Router /answers/{id} [delete]
+// @Router /answers/{id}/delete-by-tutor/{delete-by} [delete]
 func (answerHandler *AnswerHandler) DeleteAnswerByID(w http.ResponseWriter, r *http.Request) {
 
 	//Разбиение пути handler на части.
 	vars := mux.Vars(r)
 	idStr := vars["id"]
+	deleteByTutorStr := vars["delete-by"]
 
 	//Преобразование строк в число.
 	id, err := strconv.Atoi(idStr)
@@ -107,10 +109,18 @@ func (answerHandler *AnswerHandler) DeleteAnswerByID(w http.ResponseWriter, r *h
 		return
 	}
 
-	// Вызов сервиса.
-	err = answerHandler.answerService.DeleteByID(id)
+	//Преобразование строк в число.
+	deleteByTutor, err := strconv.Atoi(deleteByTutorStr)
 	if err != nil {
-		http.Error(w, "Ответ не найден", http.StatusNotFound)
+		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		return
+	}
+
+	//Возврат кода операции.
+	//  Успешный ответ - 204 No connect для удаления.
+	err = answerHandler.answerService.DeleteByID(id, deleteByTutor)
+	if err != nil {
+		http.Error(w, "Вопрос не найден", http.StatusNotFound)
 		return
 	}
 

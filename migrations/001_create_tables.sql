@@ -40,20 +40,25 @@ create table public.questions_tags(
 
 create table public.question_versions(
     id int generated always as identity primary key,
-    question_id int references questions(id) on delete cascade,
+    question_id int not null,
     question_text text not null,
-    tutor_id int references tutors(id) on delete set null,
+    tutor_id int not null,
     created_at timestamp default now(),
     version_number int not null,
+    is_delete bool default false,
+    delete_by_tutor int,
     constraint unique_question_version unique (question_id, version_number)
 );
 
 create table public.answer_versions(
     id int generated always as identity primary key,
-    answer_id int references answers(id) on delete cascade,
+    answer_id int not null,
     answer_text text not null,
-    tutor_id int references tutors(id) on delete set null,
+    question_id int not null,
+    tutor_id int not null,
     created_at timestamp default now(),
     version_number int not null,
+    is_delete bool default false,
+    delete_by_tutor int,
     constraint unique_answer_version unique (answer_id, version_number)
 );

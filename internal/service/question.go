@@ -64,13 +64,13 @@ func (questionService *QuestionService) GetByID(id int) (models.Question, error)
 	return question, nil
 }
 
-func (questionService *QuestionService) DeleteByID(id int) error {
+func (questionService *QuestionService) DeleteByID(id int, deleteByTutor int) error {
 
 	//Создание sql запроса для удаления данных одного кокретного вопроса.
-	query := `delete from questions where id = $1`
+	queryDelete := `delete from questions where id = $1`
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
-	result, err := questionService.db.Exec(query, id)
+	result, err := questionService.db.Exec(queryDelete, id)
 	if err != nil {
 		return err
 	}
@@ -84,6 +84,14 @@ func (questionService *QuestionService) DeleteByID(id int) error {
 	//Проверка было ли удаление строки. Если rowsAffected = 0, то не было.
 	if rowsAffected == 0 {
 		return fmt.Errorf("question with id %d not found", id)
+	}
+
+	//Создание sql запроса для учета удаления в версиях.
+	queryUpdateVersions := `update question_versions set is_delete = true, delete_by_tutor = $1 where question_id = $2`
+
+	_, err = questionService.db.Exec(queryUpdateVersions, deleteByTutor, id)
+	if err != nil {
+		return err
 	}
 
 	return nil

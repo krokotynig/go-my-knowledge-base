@@ -9,4 +9,6 @@ type QuestionVersion struct {
 	TutorID       *int      `db:"tutor_id" json:"tutor_id"`
 	CreatedAt     time.Time `db:"created_at" json:"created_at"`
 	VersionNumber int       `db:"version_number" json:"version_number"`
+	IsDelete      bool      `db:"is_delete" json:"is_delete"`
+	DeleteByTutor *int      `db:"delete_by_tutor" json:"delete_by_tutor"`
 }
