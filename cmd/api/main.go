@@ -14,7 +14,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title Knowledge Base API
+// @title Knowledge Base API 📚
 // @version 1.0
 // @description API для базы знаний с вопросами и ответами
 // @host localhost:2709
@@ -47,6 +47,9 @@ func main() {
 
 	questionTagService := service.NewQuestionTagService(db)
 	questionTagHandler := handler.NewQuestionTagHandler(questionTagService)
+
+	simpleSearchService := service.NewSimpelSearchService(db)
+	simpleSearchHandler := handler.NewSimpleSearchHandler(simpleSearchService)
 
 	// в REST операции определяются HTTP методами, а не путями.
 
@@ -81,6 +84,7 @@ func main() {
 	//Регистрация муршрута tags.
 	r.HandleFunc("/tags", tagHandler.GetAllTags).Methods("GET")
 	r.HandleFunc("/tags/{id}", tagHandler.GetTagByID).Methods("GET")
+	r.HandleFunc("/tags/name/{name}", tagHandler.GetTagByName).Methods("GET")
 	r.HandleFunc("/tags/{id}", tagHandler.DeleteTagByID).Methods("DELETE")
 	r.HandleFunc("/tags", tagHandler.PostTagString).Methods("POST")
 
@@ -91,7 +95,13 @@ func main() {
 	r.HandleFunc("/answer-versions/{id}", answerVersionHandler.GetAllAnswerVersionsByID).Methods("GET")
 
 	//Регистрация маршрутов questions_tags.
-	r.HandleFunc("/questions/{question_id}/tags/{tag_id}", questionTagHandler.AddTagToQuestion).Methods("POST")
+	r.HandleFunc("/question-tags/{question_id}/{tag_id}", questionTagHandler.AddTagToQuestion).Methods("POST")
+	r.HandleFunc("/question-tags", questionTagHandler.GetAllQuestionTagRelations).Methods("GET")
+	r.HandleFunc("/question-tags/by-tag/{tag_id}", questionTagHandler.GetAllQuestionTagRelationsByTagID).Methods("GET")
+	r.HandleFunc("/question-tags/{question_id}/{tag_id}", questionTagHandler.DeleteQuestionTagRelationByID).Methods("DELETE")
+
+	//Регистрация муршрута simple-search.
+	r.HandleFunc("/simple-search/{name}", simpleSearchHandler.SearchHandler).Methods("GET")
 
 	//Регистрация муршрута swagger.
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
@@ -104,6 +114,7 @@ func main() {
 	}
 
 	log.Println(" ✅ База данных готова!")
+	log.Println(" ✅ API готово!")
 	log.Println("🚀 Запуск сервера на http://localhost:2709")
 
 	log.Println("📚 Swagger UI доступен на http://localhost:2709/swagger/index.html")
