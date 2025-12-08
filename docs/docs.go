@@ -479,6 +479,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/questions/{question_id}/tags/{tag_id}": {
+            "post": {
+                "description": "Associate a tag with a question using IDs from URL path",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "question-tags"
+                ],
+                "summary": "Add tag to question",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Question ID",
+                        "name": "question_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "tag_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/tags": {
             "get": {
                 "description": "Returns list of all tags",

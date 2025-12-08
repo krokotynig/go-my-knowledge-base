@@ -45,6 +45,9 @@ func main() {
 	answerVersionService := service.NewAnswerVersionService(db)
 	answerVersionHandler := handler.NewAnswerVersionHandler(answerVersionService)
 
+	questionTagService := service.NewQuestionTagService(db)
+	questionTagHandler := handler.NewQuestionTagHandler(questionTagService)
+
 	// в REST операции определяются HTTP методами, а не путями.
 
 	//Создание явновго роутера из пакета gorilla/mux.
@@ -86,6 +89,9 @@ func main() {
 
 	//Регистрация маршрута answer-versions.
 	r.HandleFunc("/answer-versions/{id}", answerVersionHandler.GetAllAnswerVersionsByID).Methods("GET")
+
+	//Регистрация маршрутов questions_tags.
+	r.HandleFunc("/questions/{question_id}/tags/{tag_id}", questionTagHandler.AddTagToQuestion).Methods("POST")
 
 	//Регистрация муршрута swagger.
 	r.HandleFunc("/swagger/{any}", httpSwagger.WrapHandler).Methods("GET")
