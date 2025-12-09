@@ -128,19 +128,19 @@ func (answerService *AnswerService) PostString(answerText string, tutorId *int, 
 	return answerID, nil
 }
 
-func (answerService *AnswerService) PutString(answerText string, tutorId *int, questionId int, isEdit bool, id int) (models.Answer, error) {
+func (answerService *AnswerService) PutString(answerText string, tutorId *int, questionId int, id int) (models.Answer, error) {
 
 	//Создание sql запроса для обновления данных конкретного вопроса.
 	query := `update answers 
-              set answer_text = $1, tutor_id = $2, question_id = $3, is_edit = $4
-              where id = $5
+              set answer_text = $1, tutor_id = $2, question_id = $3, is_edit = true
+              where id = $4
               returning answer_text, tutor_id, question_id, created_at, is_edit`
 
 	var answer models.Answer
 
 	// Выполнение функции, которая проводит sql запрос и возвращает таблицу из одной строки. Заполнение полей переменной типа models.Answer.
 	err := answerService.db.QueryRow(
-		query, answerText, tutorId, questionId, isEdit, id).Scan(&answer.AnswersText, &answer.TutorID, &answer.QuestionID, &answer.CreatedAt, &answer.IsEdit)
+		query, answerText, tutorId, questionId, id).Scan(&answer.AnswersText, &answer.TutorID, &answer.QuestionID, &answer.CreatedAt, &answer.IsEdit)
 
 	if err != nil {
 		return models.Answer{}, err

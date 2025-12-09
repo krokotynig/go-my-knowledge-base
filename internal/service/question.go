@@ -125,19 +125,19 @@ func (questionService *QuestionService) PostString(questionText string, tutorId 
 	return questionID, nil
 }
 
-func (questionService *QuestionService) PutString(questionText string, tutorId *int, isEdit bool, id int) (models.Question, error) {
+func (questionService *QuestionService) PutString(questionText string, tutorId *int, id int) (models.Question, error) {
 
 	//Создание sql запроса для обновления данных конкретного вопроса.
 	queryQuestion := `update questions 
-              set question_text = $1, tutor_id = $2, is_edit = $3
-              where id = $4
+              set question_text = $1, tutor_id = $2, is_edit = true
+              where id = $3
               returning question_text, tutor_id, created_at, is_edit`
 
 	var question models.Question
 
 	// Выполнение функции, которая проводит sql запрос и возвращает таблицу из одной строки. Заполнение полей переменной типа models.Question.
 	err := questionService.db.QueryRow(
-		queryQuestion, questionText, tutorId, isEdit, id).Scan(&question.QuestionText, &question.TutorID, &question.CreatedAt, &question.IsEdit)
+		queryQuestion, questionText, tutorId, id).Scan(&question.QuestionText, &question.TutorID, &question.CreatedAt, &question.IsEdit)
 
 	if err != nil {
 		return models.Question{}, err

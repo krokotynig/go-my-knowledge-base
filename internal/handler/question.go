@@ -90,17 +90,17 @@ func (questionHandler *QuestionHandler) GetQuestionByID(w http.ResponseWriter, r
 // @Description Delete question by ID and mark versions as deleted
 // @Tags questions
 // @Param id path int true "Question ID"
-// @Param delete-by path int true "Tutor ID who deleted the question"
+// @Param tutor_id path int true "Tutor ID who deleted the question"
 // @Success 204
 // @Failure 400 {string} string "Invalid ID"
 // @Failure 404 {string} string "Question not found"
-// @Router /questions/{id}/delete-by-tutor/{delete-by} [delete]
+// @Router /questions/{id}/deleteBy/{tutor_id} [delete]
 func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter, r *http.Request) {
 
 	//Разбиение пути handler на части.
 	vars := mux.Vars(r)
 	idStr := vars["id"]
-	deleteByTutorStr := vars["delete-by"]
+	deleteByTutorStr := vars["tutor_id"]
 
 	//Преобразование строк в число.
 	id, err := strconv.Atoi(idStr)
@@ -132,7 +132,7 @@ func (questionHandler *QuestionHandler) DeleteQuestionByID(w http.ResponseWriter
 // @Tags questions
 // @Accept json
 // @Produce json
-// @Param question body models.QuestionsSwaggerRequestPostBody true "Question data"
+// @Param question body models.QuestionsSwaggerRequestBody true "Question data"
 // @Success 201 {object} map[string]interface{} "Question created"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 500 {string} string "Internal server error"
@@ -180,7 +180,7 @@ func (questionHandler *QuestionHandler) PostQuestionString(w http.ResponseWriter
 // @Accept json
 // @Produce json
 // @Param id path int true "Question ID"
-// @Param question body models.QuestionsSwaggerRequestPutBody true "Question data"
+// @Param question body models.QuestionsSwaggerRequestBody true "Question data"
 // @Success 200 {object} map[string]interface{} "Question updated"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 404 {string} string "Question not found"
@@ -214,7 +214,7 @@ func (questionHandler *QuestionHandler) PutQuestionString(w http.ResponseWriter,
 	}
 
 	// Вызов сервиса.
-	updatedQuestion, err := questionHandler.questionService.PutString(question.QuestionText, question.TutorID, question.IsEdit, id)
+	updatedQuestion, err := questionHandler.questionService.PutString(question.QuestionText, question.TutorID, id)
 	if err != nil {
 		http.Error(w, "Вопрос не найден", http.StatusNotFound)
 		return

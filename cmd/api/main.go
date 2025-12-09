@@ -31,7 +31,7 @@ func main() {
 	container := app.NewContainer(db)
 
 	// 4. Настройка маршрутизатора
-	r := router.Setup(container)
+	router := router.Setup(container)
 
 	// 5. Запуск сервера
 	log.Println(" ✅ База данных готова!")
@@ -39,7 +39,7 @@ func main() {
 	log.Println("🚀 Запуск сервера на http://localhost:2709")
 	log.Println("📚 Swagger UI доступен на http://localhost:2709/swagger/index.html")
 
-	if err := http.ListenAndServe(":2709", r); err != nil {
+	if err := http.ListenAndServe(":2709", router); err != nil {
 		log.Printf("❌ Ошибка запуска сервера: %v\n", err)
 	}
 }

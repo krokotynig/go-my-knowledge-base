@@ -40,6 +40,7 @@ func registerCommonRoutes(router *mux.Router) {
 
 // Регистрирует маршруты для тьюторов.
 func registerTutorRoutes(router *mux.Router, handler *handler.TutorHandler) {
+	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/tutors").Subrouter()
 
 	subrouter.HandleFunc("", handler.GetAllTutors).Methods("GET")
@@ -51,28 +52,33 @@ func registerTutorRoutes(router *mux.Router, handler *handler.TutorHandler) {
 
 // Регистрирует маршруты для вопросов.
 func registerQuestionRoutes(router *mux.Router, handler *handler.QuestionHandler) {
+
+	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/questions").Subrouter()
 
 	subrouter.HandleFunc("", handler.GetAllQuestions).Methods("GET")
 	subrouter.HandleFunc("/{id}", handler.GetQuestionByID).Methods("GET")
-	subrouter.HandleFunc("/{id}/delete-by-tutor/{tutor_id}", handler.DeleteQuestionByID).Methods("DELETE")
+	subrouter.HandleFunc("/{id}/deleteBy/{tutor_id}", handler.DeleteQuestionByID).Methods("DELETE")
 	subrouter.HandleFunc("", handler.PostQuestionString).Methods("POST")
 	subrouter.HandleFunc("/{id}", handler.PutQuestionString).Methods("PUT")
 }
 
 // Регистрирует маршруты для ответов.
 func registerAnswerRoutes(router *mux.Router, handler *handler.AnswerHandler) {
+	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/answers").Subrouter()
 
 	subrouter.HandleFunc("", handler.GetAllAnswers).Methods("GET")
 	subrouter.HandleFunc("/{id}", handler.GetAnswerByID).Methods("GET")
-	subrouter.HandleFunc("/{id}/delete-by-tutor/{tutor_id}", handler.DeleteAnswerByID).Methods("DELETE")
+	subrouter.HandleFunc("/{id}/deleteBy/{tutor_id}", handler.DeleteAnswerByID).Methods("DELETE")
 	subrouter.HandleFunc("", handler.PostAnswerString).Methods("POST")
 	subrouter.HandleFunc("/{id}", handler.PutAnswerString).Methods("PUT")
 }
 
 // Регистрирует маршруты для тегов.
 func registerTagRoutes(router *mux.Router, handler *handler.TagHandler) {
+
+	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/tags").Subrouter()
 
 	subrouter.HandleFunc("", handler.GetAllTags).Methods("GET")
@@ -94,6 +100,8 @@ func registerAnswerVersionRoutes(router *mux.Router, handler *handler.AnswerVers
 
 // Регистрирует регистрирует маршруты для связи вопросов и тегов.
 func registerQuestionTagRoutes(router *mux.Router, handler *handler.QuestionTagHandler) {
+
+	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/question-tags").Subrouter()
 
 	subrouter.HandleFunc("/{question_id}/{tag_id}", handler.AddTagToQuestion).Methods("POST")
@@ -109,5 +117,7 @@ func registerSearchRoutes(router *mux.Router, handler *handler.SimpleSearchHandl
 
 // Регистрирует регистрирует маршруты для Swagger.
 func registerSwaggerRoutes(route *mux.Router) {
+
+	// Чтобы поймать все подпути без явного прописывания.
 	route.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 }

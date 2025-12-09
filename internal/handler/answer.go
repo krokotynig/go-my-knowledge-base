@@ -90,17 +90,17 @@ func (answerHandler *AnswerHandler) GetAnswerByID(w http.ResponseWriter, r *http
 // @Description Delete answer by ID and mark all answer versions as deleted with tutor who performed deletion
 // @Tags answers
 // @Param id path int true "Answer ID"
-// @Param delete-by path int true "Tutor ID who deleted the answer"
+// @Param tutor_id path int true "Tutor ID who deleted the answer"
 // @Success 204
 // @Failure 400 {string} string "Invalid ID"
 // @Failure 404 {string} string "Answer not found"
-// @Router /answers/{id}/delete-by-tutor/{delete-by} [delete]
+// @Router /answers/{id}/deleteBy/{tutor_id} [delete]
 func (answerHandler *AnswerHandler) DeleteAnswerByID(w http.ResponseWriter, r *http.Request) {
 
 	//Разбиение пути handler на части.
 	vars := mux.Vars(r)
 	idStr := vars["id"]
-	deleteByTutorStr := vars["delete-by"]
+	deleteByTutorStr := vars["tutor_id"]
 
 	//Преобразование строк в число.
 	id, err := strconv.Atoi(idStr)
@@ -134,7 +134,7 @@ func (answerHandler *AnswerHandler) DeleteAnswerByID(w http.ResponseWriter, r *h
 // @Tags answers
 // @Accept json
 // @Produce json
-// @Param answer body models.AnswersSwaggerRequestPostBody true "Answer data"
+// @Param answer body models.AnswersSwaggerRequestBody true "Answer data"
 // @Success 201 {object} map[string]interface{} "Answer created"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 500 {string} string "Internal server error"
@@ -182,7 +182,7 @@ func (answerHandler *AnswerHandler) PostAnswerString(w http.ResponseWriter, r *h
 // @Accept json
 // @Produce json
 // @Param id path int true "Answer ID"
-// @Param answer body models.AnswersSwaggerRequestPutBody true "Answer data"
+// @Param answer body models.AnswersSwaggerRequestBody true "Answer data"
 // @Success 200 {object} map[string]interface{} "Answer updated"
 // @Failure 400 {string} string "Invalid request"
 // @Failure 404 {string} string "Answer not found"
@@ -216,7 +216,7 @@ func (answerHandler *AnswerHandler) PutAnswerString(w http.ResponseWriter, r *ht
 	}
 
 	// Вызов сервиса.
-	updatedAnswer, err := answerHandler.answerService.PutString(answer.AnswersText, answer.TutorID, answer.QuestionID, answer.IsEdit, id)
+	updatedAnswer, err := answerHandler.answerService.PutString(answer.AnswersText, answer.TutorID, answer.QuestionID, id)
 	if err != nil {
 		http.Error(w, "Ответ не найден", http.StatusNotFound)
 		return

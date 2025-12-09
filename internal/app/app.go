@@ -33,8 +33,8 @@ type Handlers struct {
 // Создает и инициализирует все зависимости.
 func NewContainer(db *sql.DB) *Handlers {
 
-	// 1. Инициализация всех сервисов.
-	services := &services{
+	// Инициализация всех сервисов.
+	services := services{
 		Tutor:           service.NewTutor(db),
 		Question:        service.NewQuestionService(db),
 		Answer:          service.NewAnswerService(db),
@@ -45,7 +45,7 @@ func NewContainer(db *sql.DB) *Handlers {
 		SimpleSearch:    service.NewSimpleSearchService(db),
 	}
 
-	// 2. Инициализация всех хэндлеров с соответствующими сервисами.
+	// Инициализация всех хэндлеров с соответствующими сервисами.
 	handlers := &Handlers{
 		Tutor:           handler.NewTutorhandler(services.Tutor),
 		Question:        handler.NewQuestionHandler(services.Question),

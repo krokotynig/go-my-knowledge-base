@@ -94,7 +94,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AnswersSwaggerRequestPostBody"
+                            "$ref": "#/definitions/models.AnswersSwaggerRequestBody"
                         }
                     }
                 ],
@@ -187,7 +187,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AnswersSwaggerRequestPutBody"
+                            "$ref": "#/definitions/models.AnswersSwaggerRequestBody"
                         }
                     }
                 ],
@@ -214,7 +214,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/answers/{id}/delete-by-tutor/{delete-by}": {
+        "/answers/{id}/deleteBy/{tutor_id}": {
             "delete": {
                 "description": "Delete answer by ID and mark all answer versions as deleted with tutor who performed deletion",
                 "tags": [
@@ -232,7 +232,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Tutor ID who deleted the answer",
-                        "name": "delete-by",
+                        "name": "tutor_id",
                         "in": "path",
                         "required": true
                     }
@@ -473,7 +473,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.QuestionsSwaggerRequestPostBody"
+                            "$ref": "#/definitions/models.QuestionsSwaggerRequestBody"
                         }
                     }
                 ],
@@ -566,7 +566,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.QuestionsSwaggerRequestPutBody"
+                            "$ref": "#/definitions/models.QuestionsSwaggerRequestBody"
                         }
                     }
                 ],
@@ -593,7 +593,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/questions/{id}/delete-by-tutor/{delete-by}": {
+        "/questions/{id}/deleteBy/{tutor_id}": {
             "delete": {
                 "description": "Delete question by ID and mark versions as deleted",
                 "tags": [
@@ -611,7 +611,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Tutor ID who deleted the question",
-                        "name": "delete-by",
+                        "name": "tutor_id",
                         "in": "path",
                         "required": true
                     }
@@ -1109,28 +1109,11 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AnswersSwaggerRequestPostBody": {
+        "models.AnswersSwaggerRequestBody": {
             "type": "object",
             "properties": {
                 "answer_text": {
                     "type": "string"
-                },
-                "question_id": {
-                    "type": "integer"
-                },
-                "tutor_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.AnswersSwaggerRequestPutBody": {
-            "type": "object",
-            "properties": {
-                "answer_text": {
-                    "type": "string"
-                },
-                "is_edit": {
-                    "type": "boolean"
                 },
                 "question_id": {
                     "type": "integer"
@@ -1200,23 +1183,9 @@ const docTemplate = `{
                 }
             }
         },
-        "models.QuestionsSwaggerRequestPostBody": {
+        "models.QuestionsSwaggerRequestBody": {
             "type": "object",
             "properties": {
-                "question_text": {
-                    "type": "string"
-                },
-                "tutor_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.QuestionsSwaggerRequestPutBody": {
-            "type": "object",
-            "properties": {
-                "is_edit": {
-                    "type": "boolean"
-                },
                 "question_text": {
                     "type": "string"
                 },

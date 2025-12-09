@@ -36,21 +36,10 @@ definitions:
       version_number:
         type: integer
     type: object
-  models.AnswersSwaggerRequestPostBody:
+  models.AnswersSwaggerRequestBody:
     properties:
       answer_text:
         type: string
-      question_id:
-        type: integer
-      tutor_id:
-        type: integer
-    type: object
-  models.AnswersSwaggerRequestPutBody:
-    properties:
-      answer_text:
-        type: string
-      is_edit:
-        type: boolean
       question_id:
         type: integer
       tutor_id:
@@ -95,17 +84,8 @@ definitions:
       version_number:
         type: integer
     type: object
-  models.QuestionsSwaggerRequestPostBody:
+  models.QuestionsSwaggerRequestBody:
     properties:
-      question_text:
-        type: string
-      tutor_id:
-        type: integer
-    type: object
-  models.QuestionsSwaggerRequestPutBody:
-    properties:
-      is_edit:
-        type: boolean
       question_text:
         type: string
       tutor_id:
@@ -201,7 +181,7 @@ paths:
         name: answer
         required: true
         schema:
-          $ref: '#/definitions/models.AnswersSwaggerRequestPostBody'
+          $ref: '#/definitions/models.AnswersSwaggerRequestBody'
       produces:
       - application/json
       responses:
@@ -264,7 +244,7 @@ paths:
         name: answer
         required: true
         schema:
-          $ref: '#/definitions/models.AnswersSwaggerRequestPutBody'
+          $ref: '#/definitions/models.AnswersSwaggerRequestBody'
       produces:
       - application/json
       responses:
@@ -284,7 +264,7 @@ paths:
       summary: Update answer and records the version
       tags:
       - answers
-  /answers/{id}/delete-by-tutor/{delete-by}:
+  /answers/{id}/deleteBy/{tutor_id}:
     delete:
       description: Delete answer by ID and mark all answer versions as deleted with
         tutor who performed deletion
@@ -296,7 +276,7 @@ paths:
         type: integer
       - description: Tutor ID who deleted the answer
         in: path
-        name: delete-by
+        name: tutor_id
         required: true
         type: integer
       responses:
@@ -457,7 +437,7 @@ paths:
         name: question
         required: true
         schema:
-          $ref: '#/definitions/models.QuestionsSwaggerRequestPostBody'
+          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
       produces:
       - application/json
       responses:
@@ -520,7 +500,7 @@ paths:
         name: question
         required: true
         schema:
-          $ref: '#/definitions/models.QuestionsSwaggerRequestPutBody'
+          $ref: '#/definitions/models.QuestionsSwaggerRequestBody'
       produces:
       - application/json
       responses:
@@ -540,7 +520,7 @@ paths:
       summary: Update question and records the version
       tags:
       - questions
-  /questions/{id}/delete-by-tutor/{delete-by}:
+  /questions/{id}/deleteBy/{tutor_id}:
     delete:
       description: Delete question by ID and mark versions as deleted
       parameters:
@@ -551,7 +531,7 @@ paths:
         type: integer
       - description: Tutor ID who deleted the question
         in: path
-        name: delete-by
+        name: tutor_id
         required: true
         type: integer
       responses:
