@@ -86,6 +86,45 @@ func (tagHandler *TagHandler) GetTagByID(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+// @Summary Get tag by name
+// @Description Returns tag by tags name
+// @Tags tags
+// @Produce json
+// @Param name path string true "Tag Name"
+// @Success 200 {object} models.Tag
+// @Failure 400 {string} string "Invalid name""
+// @Failure 404 {string} string "Tag not found"
+// @Router /tags/name/{name} [get]
+func (tagHandler *TagHandler) GetTagByName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+
+	// Валидация.
+	if name == "" {
+		http.Error(w, "Имя тега не может быть пустым", http.StatusBadRequest)
+		return
+	}
+
+	// Ограничение длины varchar(25.
+	if len(name) > 25 {
+		http.Error(w, "Имя тега слишком длинное", http.StatusBadRequest)
+		return
+	}
+
+	tag, err := tagHandler.tagService.GetByName(name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(tag)
+	if err != nil {
+		http.Error(w, "Ошибка кодирования JSON: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 // @Summary Delete tag by ID
 // @Description Delete tag by ID (cascades from questions_tags)
 // @Tags tags

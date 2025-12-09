@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "API для базы знаний с вопросами и ответами",
-        "title": "Knowledge Base API",
+        "title": "Knowledge Base API 📚",
         "contact": {},
         "version": "1.0"
     },
@@ -243,6 +243,144 @@
                     },
                     "404": {
                         "description": "Answer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/question-tags": {
+            "get": {
+                "description": "Returns list of all relations between questions and tags",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "question-tags"
+                ],
+                "summary": "Get all question-tag relations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.QuestionTag"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/question-tags/by-tag/{tag_id}": {
+            "get": {
+                "description": "Returns list of all relations between questions and tags by tag ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "question-tags"
+                ],
+                "summary": "Get all question-tag relations by tag ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "tag_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.QuestionTag"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/question-tags/{question_id}/{tag_id}": {
+            "post": {
+                "description": "Associate a tag with a question using IDs from URL path",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "question-tags"
+                ],
+                "summary": "Add tag to question",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Question ID",
+                        "name": "question_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "tag_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete relation between question and tag by their IDs",
+                "tags": [
+                    "question-tags"
+                ],
+                "summary": "Delete question-tag relation",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Question ID",
+                        "name": "question_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "tag_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid question ID or tag ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Relation not found",
                         "schema": {
                             "type": "string"
                         }
@@ -491,42 +629,37 @@
                 }
             }
         },
-        "/questions/{question_id}/tags/{tag_id}": {
-            "post": {
-                "description": "Associate a tag with a question using IDs from URL path",
+        "/simple-search/{name}": {
+            "get": {
+                "description": "Search questions by exact tag name",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "question-tags"
+                    "search 🔍"
                 ],
-                "summary": "Add tag to question",
+                "summary": "Search questions by tag name (exact match)",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Question ID",
-                        "name": "question_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Tag ID",
-                        "name": "tag_id",
+                        "type": "string",
+                        "description": "Tag name to search for (exact match)",
+                        "name": "name",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Question"
+                            }
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Tag name parameter is required",
                         "schema": {
                             "type": "string"
                         }
@@ -595,6 +728,47 @@
                     },
                     "500": {
                         "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/tags/name/{name}": {
+            "get": {
+                "description": "Returns tag by tags name",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tags"
+                ],
+                "summary": "Get tag by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tag Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tag"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
                         "schema": {
                             "type": "string"
                         }
@@ -976,6 +1150,17 @@
                     "type": "string"
                 },
                 "tutor_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.QuestionTag": {
+            "type": "object",
+            "properties": {
+                "question_id": {
+                    "type": "integer"
+                },
+                "tag_id": {
                     "type": "integer"
                 }
             }

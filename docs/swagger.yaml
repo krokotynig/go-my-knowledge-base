@@ -69,6 +69,13 @@ definitions:
       tutor_id:
         type: integer
     type: object
+  models.QuestionTag:
+    properties:
+      question_id:
+        type: integer
+      tag_id:
+        type: integer
+    type: object
   models.QuestionVersion:
     properties:
       created_at:
@@ -140,7 +147,7 @@ host: localhost:2709
 info:
   contact: {}
   description: API для базы знаний с вопросами и ответами
-  title: Knowledge Base API
+  title: "Knowledge Base API \U0001F4DA"
   version: "1.0"
 paths:
   /answer-versions/{id}:
@@ -306,6 +313,99 @@ paths:
       summary: Delete answer by ID with version tracking
       tags:
       - answers
+  /question-tags:
+    get:
+      description: Returns list of all relations between questions and tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.QuestionTag'
+            type: array
+      summary: Get all question-tag relations
+      tags:
+      - question-tags
+  /question-tags/{question_id}/{tag_id}:
+    delete:
+      description: Delete relation between question and tag by their IDs
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: integer
+      - description: Tag ID
+        in: path
+        name: tag_id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid question ID or tag ID
+          schema:
+            type: string
+        "404":
+          description: Relation not found
+          schema:
+            type: string
+      summary: Delete question-tag relation
+      tags:
+      - question-tags
+    post:
+      description: Associate a tag with a question using IDs from URL path
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: integer
+      - description: Tag ID
+        in: path
+        name: tag_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Add tag to question
+      tags:
+      - question-tags
+  /question-tags/by-tag/{tag_id}:
+    get:
+      description: Returns list of all relations between questions and tags by tag
+        ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: tag_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.QuestionTag'
+            type: array
+      summary: Get all question-tag relations by tag ID
+      tags:
+      - question-tags
   /question-versions/{id}:
     get:
       description: Returns all versions of a specific question by question ID
@@ -468,35 +568,31 @@ paths:
       summary: Delete question
       tags:
       - questions
-  /questions/{question_id}/tags/{tag_id}:
-    post:
-      description: Associate a tag with a question using IDs from URL path
+  /simple-search/{name}:
+    get:
+      description: Search questions by exact tag name
       parameters:
-      - description: Question ID
+      - description: Tag name to search for (exact match)
         in: path
-        name: question_id
+        name: name
         required: true
-        type: integer
-      - description: Tag ID
-        in: path
-        name: tag_id
-        required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Question'
+            type: array
         "400":
-          description: Bad request
+          description: Tag name parameter is required
           schema:
             type: string
-      summary: Add tag to question
+      summary: Search questions by tag name (exact match)
       tags:
-      - question-tags
+      - "search \U0001F50D"
   /tags:
     get:
       description: Returns list of all tags
@@ -589,6 +685,33 @@ paths:
           schema:
             type: string
       summary: Get tag by ID
+      tags:
+      - tags
+  /tags/name/{name}:
+    get:
+      description: Returns tag by tags name
+      parameters:
+      - description: Tag Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Invalid name
+          schema:
+            type: string
+        "404":
+          description: Tag not found
+          schema:
+            type: string
+      summary: Get tag by name
       tags:
       - tags
   /tutors:

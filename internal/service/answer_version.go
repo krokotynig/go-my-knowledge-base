@@ -5,7 +5,7 @@ import (
 	"knowledge-base/internal/models"
 )
 
-// Структура для работы со всеми ф-ями service/answer-version.go.
+// Структура для работы со всеми ф-ями service/answer_version.go.
 type AnswerVersionService struct {
 	db *sql.DB
 }

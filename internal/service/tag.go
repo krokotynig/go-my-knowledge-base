@@ -19,7 +19,7 @@ func NewTagService(db *sql.DB) *TagService {
 func (tagService *TagService) GetAll() ([]models.Tag, error) {
 
 	//Создание sql запроса для получения данных по всем тегам.
-	var query string = `select id, tutor_id, tag from tags order by tag`
+	var query string = `select id, tutor_id, tag from tags order by id`
 
 	// Выполнение функции, которая проводит sql запрос и возвращает таблицу с несколькими строками.
 	rows, err := tagService.db.Query(query)
@@ -64,10 +64,29 @@ func (tagService *TagService) GetByID(id int) (models.Tag, error) {
 	return tag, nil
 }
 
+func (tagService *TagService) GetByName(name string) (models.Tag, error) {
+
+	//Создание sql запроса для получения данных по одному конкретному тегу.
+	var query string = `select id, tutor_id, tag from tags where lower(trim(tag)) = lower(trim($1))`
+
+	// Выполнение функции, которая проводит sql запрос и возвращает таблицу из одной строки.
+	row := tagService.db.QueryRow(query, name)
+
+	var tag models.Tag
+
+	// Запись полученных данных из БД в перемнную типа models.Tag.
+	err := row.Scan(&tag.ID, &tag.TutorID, &tag.Tag)
+	if err != nil {
+		return models.Tag{}, err
+	}
+
+	return tag, nil
+}
+
 func (tagService *TagService) DeleteByID(id int) error {
 
 	//Создание sql запроса для удаления данных одного кокретного тега.
-	query := `delete from tags where id = $1`
+	var query string = `delete from tags where id = $1`
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
 	result, err := tagService.db.Exec(query, id)
@@ -92,7 +111,7 @@ func (tagService *TagService) DeleteByID(id int) error {
 func (tagService *TagService) PostString(tag string, tutorID *int) (int, error) {
 
 	//Создание sql запроса для появления новой записи в таблице тегов.
-	query := `insert into tags (tag, tutor_id) values
+	var query string = `insert into tags (tag, tutor_id) values
 			($1,$2) returning id`
 
 	var id int

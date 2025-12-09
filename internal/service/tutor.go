@@ -67,7 +67,7 @@ func (tutorService *TutorService) GetByID(id int) (models.Tutor, error) {
 func (tutorService *TutorService) DeleteByID(id int) error {
 
 	//Создание sql запроса для удаления данных одного кокретного тьютора.
-	query := `delete from tutors where id = $1`
+	var query string = `delete from tutors where id = $1`
 
 	// Выполнение функции, которая проводит sql запрос без возврата данных.
 	result, err := tutorService.db.Exec(query, id)
@@ -92,7 +92,7 @@ func (tutorService *TutorService) DeleteByID(id int) error {
 func (tutorService *TutorService) PostString(fullName string, email string) (int, error) {
 
 	//Создание sql запроса для появления новой записи в таблице тьюторов.
-	query := `insert into tutors (full_name, email) values
+	var query string = `insert into tutors (full_name, email) values
 			($1,$2) returning id`
 
 	var id int
@@ -112,7 +112,7 @@ func (tutorService *TutorService) PostString(fullName string, email string) (int
 func (tutorService *TutorService) PutString(fullName string, email string, id int) (models.Tutor, error) {
 
 	//Создание sql запроса для обновления данных конкретного тьютора.
-	query := `update tutors 
+	var query string = `update tutors 
 			set 
 			full_name = $1, email = $2
 			where id = $3
