@@ -53,7 +53,7 @@ func registerTutorRoutes(router *mux.Router, handler *handler.TutorHandler) {
 // Регистрирует маршруты для вопросов.
 func registerQuestionRoutes(router *mux.Router, handler *handler.QuestionHandler) {
 
-	// Из за того, что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
+	// Из за того,что PathPrefix возвращает Route, который управляет одним, а не множеством путей, надо вызвать Subrouter()
 	subrouter := router.PathPrefix("/questions").Subrouter()
 
 	subrouter.HandleFunc("", handler.GetAllQuestions).Methods("GET")

@@ -12,19 +12,30 @@ import (
 
 func Connect() *sql.DB {
 
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		log.Fatal("Ошибка загрузки .env", err)
+	if os.Getenv("DB_HOST") != "knowledge_db" {
+		// Локальная разработка - грузим .env.
+		err := godotenv.Load("../../.env")
+		if err != nil {
+			log.Fatal("Локальная разработка: не найден .env файл")
+		}
 	}
 
-	// Получение env в память переменных без hardcode
-	var dbHost string = "localhost"
+	// Получение env в память переменных без hardcode.
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "localhost" // fallback для локальной разработки.
+	}
+
 	var dbName string = os.Getenv("POSTGRES_DB")
 	var dbUser string = os.Getenv("POSTGRES_USER")
 	var dbPassword string = os.Getenv("POSTGRES_PASSWORD")
 	var dbPort string = os.Getenv("POSTGRES_PORT")
 
-	// Url, строка для подключения к БД. Потом ее парсит "database/sql"
+	if dbPort == "" {
+		dbPort = "5432"
+	}
+
+	// Url, строка для подключения к БД. Потом ее парсит "database/sql".
 	var dsn string = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbUser, dbPassword, dbHost, dbPort, dbName)
 

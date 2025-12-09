@@ -9,9 +9,14 @@ import (
 
 func CreateTables(db *sql.DB) error {
 	// Читаем SQL из файла миграций.
-	sqlBytes, err := os.ReadFile("../../migrations/001_create_tables.sql")
+
+	sqlBytes, err := os.ReadFile("./migrations/001_create_tables.sql")
 	if err != nil {
-		return fmt.Errorf("ошибка чтения файла миграции: %v", err)
+		// Пробуем путь для локальной разработки.
+		sqlBytes, err = os.ReadFile("../../migrations/001_create_tables.sql")
+		if err != nil {
+			return fmt.Errorf("ошибка чтения файла миграции: %v", err)
+		}
 	}
 
 	// Выполняем SQL запросы.

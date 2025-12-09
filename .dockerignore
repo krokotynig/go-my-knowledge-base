@@ -1,0 +1,13 @@
+# .dockerignore.
+
+# 1. Файлы Docker (сами себя не копируем).
+Dockerfile
+compose.yaml
+.dockerignore
+
+# 3. Документация.
+README.md
+
+# 4. Логи и временные файлы на свсякий.
+*.log
+tmp/

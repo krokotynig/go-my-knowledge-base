@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Структура для работы со всеми ф-ями handler/answer_version.go
+// Структура для работы со всеми ф-ями handler/answer_version.go.
 type AnswerVersionHandler struct {
 	answerVersionService *service.AnswerVersionService
 }
