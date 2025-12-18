@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq" // драйвер дработы c postgres. Не нужен при работе с "database/sql" в других пакетах.
+	_ "github.com/lib/pq" // драйвер для работы c postgres. Не нужен при работе с "database/sql" в других пакетах.
 )
 
 func Connect() *sql.DB {
